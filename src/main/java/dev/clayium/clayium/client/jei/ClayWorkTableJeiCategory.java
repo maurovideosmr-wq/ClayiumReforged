@@ -113,7 +113,7 @@ final class ClayWorkTableJeiCategory implements IRecipeCategory<ClayWorkTableJei
     public void setRecipe(IRecipeLayoutBuilder builder, ClayWorkTableJeiRecipe recipe, IFocusGroup focuses) {
         builder.addSlot(RecipeIngredientRole.INPUT, INPUT_SLOT_X, INPUT_SLOT_Y)
                 .setSlotName("input")
-                .add(recipe.input());
+                .addItemStacks(recipe.inputs());
         if (!recipe.tools().isEmpty()) {
             builder.addSlot(RecipeIngredientRole.INPUT, TOOL_SLOT_X, TOOL_SLOT_Y)
                     .setSlotName("tool")
@@ -152,7 +152,7 @@ final class ClayWorkTableJeiCategory implements IRecipeCategory<ClayWorkTableJei
 
     @Override
     public Identifier getIdentifier(ClayWorkTableJeiRecipe recipe) {
-        return Identifier.fromNamespaceAndPath(Clayium.MOD_ID, "clay_work_table/" + recipe.id());
+        return recipe.id();
     }
 
     @Override

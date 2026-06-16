@@ -1,0 +1,12 @@
+{
+  "type": "clayium:clay_work_table",
+  "clicks": 3,
+  "input": "clayium:clay_cylinder",
+  "operation": "hand_knead",
+  "outputs": [
+    {
+      "id": "clayium:clay_needle"
+    }
+  ],
+  "show_notification": false
+}

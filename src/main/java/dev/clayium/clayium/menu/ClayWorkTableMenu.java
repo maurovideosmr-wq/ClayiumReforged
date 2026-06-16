@@ -1,9 +1,13 @@
 package dev.clayium.clayium.menu;
 
+import dev.clayium.clayium.recipe.ClayWorkTableAction;
+import dev.clayium.clayium.recipe.ClayWorkTableRecipe;
+import dev.clayium.clayium.recipe.ClayWorkTableRecipeCache;
 import dev.clayium.clayium.registry.ClayiumBlocks;
 import dev.clayium.clayium.registry.ClayiumMenus;
 import java.util.List;
 import java.util.Optional;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
@@ -14,6 +18,7 @@ import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.inventory.SimpleContainerData;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 
 public class ClayWorkTableMenu extends AbstractContainerMenu {
     public static final int DATA_COUNT = 3;
@@ -28,6 +33,7 @@ public class ClayWorkTableMenu extends AbstractContainerMenu {
     private final Container table;
     private final ContainerData data;
     private final ContainerLevelAccess access;
+    private final Level level;
 
     public ClayWorkTableMenu(int containerId, Inventory playerInventory) {
         this(containerId, playerInventory, ContainerLevelAccess.NULL);
@@ -44,6 +50,7 @@ public class ClayWorkTableMenu extends AbstractContainerMenu {
         this.table = table;
         this.data = data;
         this.access = access;
+        this.level = playerInventory.player.level();
 
         this.addSlot(new Slot(table, ClayWorkTableOperations.INPUT_SLOT, 17, 30));
         this.addSlot(new ToolSlot(table, ClayWorkTableOperations.TOOL_SLOT, 80, 17));
@@ -92,7 +99,7 @@ public class ClayWorkTableMenu extends AbstractContainerMenu {
             if (!this.moveItemStackTo(stack, ClayWorkTableOperations.TOOL_SLOT, ClayWorkTableOperations.TOOL_SLOT + 1, false)) {
                 return ItemStack.EMPTY;
             }
-        } else if (ClayWorkTableOperations.isKnownInput(stack)) {
+        } else if (this.isKnownInput(stack)) {
             if (!this.moveItemStackTo(stack, ClayWorkTableOperations.INPUT_SLOT, ClayWorkTableOperations.INPUT_SLOT + 1, false)) {
                 return ItemStack.EMPTY;
             }
@@ -152,24 +159,28 @@ public class ClayWorkTableMenu extends AbstractContainerMenu {
 
     private int getButtonState(int buttonId, boolean allowSyncedContinuationFallback) {
         int cookingMethod = this.getCookingMethod();
-        if (cookingMethod != 0 && cookingMethod == buttonId) {
-            if (this.findProcessableOperation(buttonId, ClayWorkTableOperations.INTERNAL_INPUT_SLOT).isPresent()) {
+        if (cookingMethod != 0) {
+            if (cookingMethod != buttonId) {
+                return 0;
+            }
+            if (this.findProcessableRecipe(buttonId, ClayWorkTableOperations.INTERNAL_INPUT_SLOT).isPresent()) {
                 return 1;
             }
             if (allowSyncedContinuationFallback && this.getTimeToCook() > 0 && ClayWorkTableOperations.canUseToolForButton(buttonId, this.table.getItem(ClayWorkTableOperations.TOOL_SLOT))) {
                 return 1;
             }
+            return 0;
         }
-        Optional<ClayWorkTableOperations.Operation> inputOperation = this.findProcessableOperation(buttonId, ClayWorkTableOperations.INPUT_SLOT);
-        if (inputOperation.isPresent()) {
-            return cookingMethod == 0 ? 1 : 2;
+        Optional<RecipeHolder<ClayWorkTableRecipe>> inputRecipe = this.findProcessableRecipe(buttonId, ClayWorkTableOperations.INPUT_SLOT);
+        if (inputRecipe.isPresent()) {
+            return 1;
         }
         return 0;
     }
 
     public int getWorkTicksForButton(int buttonId) {
-        return this.findPreviewOperation(buttonId)
-                .map(ClayWorkTableOperations.Operation::workTicks)
+        return this.findPreviewRecipe(buttonId)
+                .map(holder -> holder.value().workTicks())
                 .orElse(0);
     }
 
@@ -177,21 +188,16 @@ public class ClayWorkTableMenu extends AbstractContainerMenu {
         if (this.getButtonState(buttonId) != 1) {
             return List.of();
         }
-        return this.findPreviewOperation(buttonId)
-                .filter(operation -> this.canFitOutputs(operation.createOutputs()))
-                .map(ClayWorkTableOperations.Operation::createOutputs)
+        return this.findPreviewRecipe(buttonId)
+                .map(RecipeHolder::value)
+                .filter(recipe -> this.canFitOutputs(recipe.createOutputs()))
+                .map(ClayWorkTableRecipe::createOutputs)
                 .orElse(List.of());
     }
 
     private void pushButton(int buttonId) {
         int buttonState = this.getServerButtonState(buttonId);
         if (buttonState == 0) {
-            return;
-        }
-        if (buttonState == 2) {
-            this.clearWorkState();
-            this.table.setChanged();
-            this.broadcastChanges();
             return;
         }
         if (this.getCookingMethod() == 0 && !this.startWork(buttonId)) {
@@ -207,25 +213,27 @@ public class ClayWorkTableMenu extends AbstractContainerMenu {
     }
 
     private boolean startWork(int buttonId) {
-        Optional<ClayWorkTableOperations.Operation> operation = this.findProcessableOperation(buttonId, ClayWorkTableOperations.INPUT_SLOT);
-        if (operation.isEmpty()) {
+        Optional<ClayWorkTableRecipe> recipe = this.findProcessableRecipe(buttonId, ClayWorkTableOperations.INPUT_SLOT)
+                .map(RecipeHolder::value);
+        if (recipe.isEmpty()) {
             return false;
         }
         ItemStack input = this.table.getItem(ClayWorkTableOperations.INPUT_SLOT);
-        ItemStack reservedInput = input.split(operation.get().inputCount());
+        ItemStack reservedInput = input.split(recipe.get().inputCount());
         if (input.isEmpty()) {
             this.table.setItem(ClayWorkTableOperations.INPUT_SLOT, ItemStack.EMPTY);
         }
         this.table.setItem(ClayWorkTableOperations.INTERNAL_INPUT_SLOT, reservedInput);
         this.data.set(DATA_COOK_TIME, 0);
-        this.data.set(DATA_TIME_TO_COOK, operation.get().workTicks());
+        this.data.set(DATA_TIME_TO_COOK, recipe.get().workTicks());
         this.data.set(DATA_COOKING_METHOD, buttonId);
         return true;
     }
 
     private void completeWork(int buttonId) {
-        this.findProcessableOperation(buttonId, ClayWorkTableOperations.INTERNAL_INPUT_SLOT)
-                .map(ClayWorkTableOperations.Operation::createOutputs)
+        this.findProcessableRecipe(buttonId, ClayWorkTableOperations.INTERNAL_INPUT_SLOT)
+                .map(RecipeHolder::value)
+                .map(ClayWorkTableRecipe::createOutputs)
                 .filter(this::canFitOutputs)
                 .ifPresent(this::addOutputs);
         this.clearWorkState();
@@ -238,21 +246,21 @@ public class ClayWorkTableMenu extends AbstractContainerMenu {
         this.table.setItem(ClayWorkTableOperations.INTERNAL_INPUT_SLOT, ItemStack.EMPTY);
     }
 
-    private Optional<ClayWorkTableOperations.Operation> findPreviewOperation(int buttonId) {
+    private Optional<RecipeHolder<ClayWorkTableRecipe>> findPreviewRecipe(int buttonId) {
         if (this.getCookingMethod() == buttonId) {
-            Optional<ClayWorkTableOperations.Operation> internalOperation = this.findProcessableOperation(buttonId, ClayWorkTableOperations.INTERNAL_INPUT_SLOT);
-            if (internalOperation.isPresent()) {
-                return internalOperation;
+            Optional<RecipeHolder<ClayWorkTableRecipe>> internalRecipe = this.findProcessableRecipe(buttonId, ClayWorkTableOperations.INTERNAL_INPUT_SLOT);
+            if (internalRecipe.isPresent()) {
+                return internalRecipe;
             }
         }
-        return this.findProcessableOperation(buttonId, ClayWorkTableOperations.INPUT_SLOT);
+        return this.findProcessableRecipe(buttonId, ClayWorkTableOperations.INPUT_SLOT);
     }
 
-    private Optional<ClayWorkTableOperations.Operation> findProcessableOperation(int buttonId, int inputSlot) {
+    private Optional<RecipeHolder<ClayWorkTableRecipe>> findProcessableRecipe(int buttonId, int inputSlot) {
         ItemStack input = this.table.getItem(inputSlot);
         ItemStack tool = this.table.getItem(ClayWorkTableOperations.TOOL_SLOT);
-        return ClayWorkTableOperations.find(buttonId, input, tool)
-                .filter(operation -> this.canFitOutputs(operation.createOutputs()));
+        return ClayWorkTableRecipeCache.findBest(this.level, ClayWorkTableAction.byButtonId(buttonId), input, tool)
+                .filter(holder -> this.canFitOutputs(holder.value().createOutputs()));
     }
 
     private boolean canFitOutputs(List<ItemStack> outputs) {
@@ -292,6 +300,10 @@ public class ClayWorkTableMenu extends AbstractContainerMenu {
                 this.table.setChanged();
             }
         }
+    }
+
+    private boolean isKnownInput(ItemStack stack) {
+        return ClayWorkTableRecipeCache.isKnownInput(this.level, stack) || ClayWorkTableOperations.isKnownInput(stack);
     }
 
     private static class ToolSlot extends Slot {

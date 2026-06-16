@@ -1,0 +1,13 @@
+{
+  "type": "clayium:clay_work_table",
+  "clicks": 2,
+  "input": "clayium:clay_disc",
+  "operation": "rolling_pin",
+  "outputs": [
+    {
+      "id": "clayium:raw_clay_slicer"
+    }
+  ],
+  "show_notification": false,
+  "tool": "rolling_pin"
+}

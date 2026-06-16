@@ -1,42 +1,41 @@
 package dev.clayium.clayium.client.jei;
 
-import dev.clayium.clayium.menu.ClayWorkTableOperations;
-import dev.clayium.clayium.registry.ClayiumItems;
+import dev.clayium.clayium.recipe.ClayWorkTableRecipe;
+import dev.clayium.clayium.recipe.ClayWorkTableRecipeCache;
+import dev.clayium.clayium.recipe.ClayWorkTableToolRequirement;
 import java.util.Comparator;
 import java.util.List;
-import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.ItemLike;
 
 record ClayWorkTableJeiRecipe(
-        String id,
-        ItemStack input,
+        Identifier id,
+        List<ItemStack> inputs,
         List<ItemStack> tools,
         List<ItemStack> outputs,
         int buttonId,
         int workTicks
 ) {
     static List<ClayWorkTableJeiRecipe> all() {
-        return ClayWorkTableOperations.operations().stream()
+        return ClayWorkTableRecipeCache.clientRecipes().stream()
                 .sorted(Comparator
-                        .comparingInt(ClayWorkTableOperations.Operation::buttonId)
-                        .thenComparing(operation -> itemKey(operation.input().get()))
-                        .thenComparingInt(ClayWorkTableOperations.Operation::inputCount))
+                        .comparingInt((RecipeHolder<ClayWorkTableRecipe> holder) -> holder.value().action().buttonId())
+                        .thenComparing(holder -> holder.id().identifier().toString()))
                 .map(ClayWorkTableJeiRecipe::from)
                 .toList();
     }
 
-    private static ClayWorkTableJeiRecipe from(ClayWorkTableOperations.Operation operation) {
-        ItemLike input = operation.input().get();
+    private static ClayWorkTableJeiRecipe from(RecipeHolder<ClayWorkTableRecipe> holder) {
+        ClayWorkTableRecipe recipe = holder.value();
         return new ClayWorkTableJeiRecipe(
-                operation.buttonId() + "/" + itemKey(input) + "/" + operation.inputCount(),
-                stack(input, operation.inputCount()),
-                toolStacks(operation.toolRequirement()),
-                operation.outputs().stream()
-                        .map(output -> stack(output.item().get(), output.count()))
-                        .toList(),
-                operation.buttonId(),
-                operation.workTicks()
+                holder.id().identifier(),
+                inputStacks(recipe),
+                toolStacks(recipe.toolRequirement()),
+                recipe.createOutputs(),
+                recipe.action().buttonId(),
+                recipe.workTicks()
         );
     }
 
@@ -52,24 +51,20 @@ record ClayWorkTableJeiRecipe(
         return !this.byproductOutput().isEmpty();
     }
 
-    private static List<ItemStack> toolStacks(ClayWorkTableOperations.ToolRequirement toolRequirement) {
-        return switch (toolRequirement) {
-            case NONE -> List.of();
-            case ROLLING_PIN -> List.of(stack(ClayiumItems.CLAY_ROLLING_PIN.get(), 1));
-            case SLICER_OR_SPATULA -> List.of(
-                    stack(ClayiumItems.CLAY_SLICER.get(), 1),
-                    stack(ClayiumItems.CLAY_SPATULA.get(), 1)
-            );
-            case SPATULA -> List.of(stack(ClayiumItems.CLAY_SPATULA.get(), 1));
-        };
+    @SuppressWarnings("deprecation")
+    private static List<ItemStack> inputStacks(ClayWorkTableRecipe recipe) {
+        return recipe.input().items()
+                .map(holder -> new ItemStack(holder, recipe.inputCount()))
+                .toList();
+    }
+
+    private static List<ItemStack> toolStacks(ClayWorkTableToolRequirement toolRequirement) {
+        return toolRequirement.displayTools().stream()
+                .map(item -> stack(item, 1))
+                .toList();
     }
 
     private static ItemStack stack(ItemLike item, int count) {
         return new ItemStack(item.asItem(), count);
-    }
-
-    private static String itemKey(ItemLike item) {
-        var key = BuiltInRegistries.ITEM.getKey(item.asItem());
-        return key.getNamespace() + "/" + key.getPath();
     }
 }

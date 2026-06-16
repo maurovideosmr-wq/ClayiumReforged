@@ -64,6 +64,12 @@ public class ClayWorkTableBlockEntity extends BlockEntity implements Container, 
     }
 
     @Override
+    public void preRemoveSideEffects(BlockPos pos, BlockState state) {
+        // Keep the inventory drop contract explicit for this container block entity.
+        super.preRemoveSideEffects(pos, state);
+    }
+
+    @Override
     public int getContainerSize() {
         return this.items.size();
     }

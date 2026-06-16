@@ -2,6 +2,7 @@ package dev.clayium.clayium.registry;
 
 import dev.clayium.clayium.Clayium;
 import dev.clayium.clayium.block.ClayWorkTableBlock;
+import java.util.EnumMap;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.SoundType;
@@ -20,6 +21,7 @@ public final class ClayiumBlocks {
                     .mapColor(MapColor.COLOR_ORANGE)
                     .strength(1.0F, 1.0F)
                     .sound(SoundType.GRAVEL)
+                    .requiresCorrectToolForDrops()
     );
 
     public static final DeferredBlock<ClayWorkTableBlock> CLAY_WORK_TABLE = BLOCKS.registerBlock(
@@ -31,15 +33,10 @@ public final class ClayiumBlocks {
                     .sound(SoundType.WOOD)
     );
 
-    public static final DeferredBlock<Block> RAW_CLAY_MACHINE_HULL = BLOCKS.registerSimpleBlock(
-            "raw_clay_machine_hull",
-            properties -> machineHullProperties()
-    );
+    private static final EnumMap<MachineHullTier, DeferredBlock<Block>> MACHINE_HULLS = registerMachineHulls();
 
-    public static final DeferredBlock<Block> CLAY_MACHINE_HULL = BLOCKS.registerSimpleBlock(
-            "clay_machine_hull",
-            properties -> machineHullProperties()
-    );
+    public static final DeferredBlock<Block> RAW_CLAY_MACHINE_HULL = machineHull(MachineHullTier.RAW_CLAY);
+    public static final DeferredBlock<Block> CLAY_MACHINE_HULL = machineHull(MachineHullTier.CLAY);
 
     private ClayiumBlocks() {
     }
@@ -48,10 +45,30 @@ public final class ClayiumBlocks {
         BLOCKS.register(eventBus);
     }
 
-    private static BlockBehaviour.Properties machineHullProperties() {
-        return BlockBehaviour.Properties.ofFullCopy(Blocks.STONE)
-                .mapColor(MapColor.TERRACOTTA_BROWN)
-                .strength(2.0F, 5.0F)
-                .sound(SoundType.STONE);
+    public static DeferredBlock<Block> machineHull(MachineHullTier tier) {
+        return MACHINE_HULLS.get(tier);
+    }
+
+    private static EnumMap<MachineHullTier, DeferredBlock<Block>> registerMachineHulls() {
+        EnumMap<MachineHullTier, DeferredBlock<Block>> hulls = new EnumMap<>(MachineHullTier.class);
+        for (MachineHullTier tier : MachineHullTier.values()) {
+            hulls.put(tier, BLOCKS.registerSimpleBlock(tier.id(), properties -> machineHullProperties(tier)));
+        }
+        return hulls;
+    }
+
+    private static BlockBehaviour.Properties machineHullProperties(MachineHullTier tier) {
+        return switch (tier) {
+            case RAW_CLAY -> BlockBehaviour.Properties.ofFullCopy(Blocks.CLAY)
+                    .mapColor(MapColor.TERRACOTTA_BROWN)
+                    .strength(1.0F, 1.0F)
+                    .sound(SoundType.GRAVEL)
+                    .requiresCorrectToolForDrops();
+            case CLAY -> BlockBehaviour.Properties.ofFullCopy(Blocks.STONE)
+                    .mapColor(MapColor.TERRACOTTA_BROWN)
+                    .strength(2.0F, 5.0F)
+                    .sound(SoundType.STONE)
+                    .requiresCorrectToolForDrops();
+        };
     }
 }

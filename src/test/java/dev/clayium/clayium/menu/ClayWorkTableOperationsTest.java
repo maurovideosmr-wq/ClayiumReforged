@@ -1,6 +1,8 @@
 package dev.clayium.clayium.menu;
 
+import dev.clayium.clayium.recipe.ClayWorkTableToolRequirement;
 import dev.clayium.clayium.registry.ClayiumItems;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Supplier;
@@ -20,7 +22,7 @@ class ClayWorkTableOperationsTest {
 
         assertEquals(1, operation.buttonId());
         assertEquals(1, operation.inputCount());
-        assertSame(ClayWorkTableOperations.ToolRequirement.NONE, operation.toolRequirement());
+        assertSame(ClayWorkTableToolRequirement.NONE, operation.toolRequirement());
         assertEquals(4, operation.workTicks());
         assertEquals(1, operation.outputs().size());
         assertSame(ClayiumItems.CLAY_STICK, operation.outputs().getFirst().item());
@@ -31,7 +33,7 @@ class ClayWorkTableOperationsTest {
     void rollingPinIsRequiredForFastRawSlicerRecipeData() {
         ClayWorkTableOperations.Operation operation = findByInputAndButton(ClayiumItems.CLAY_DISC, 3);
 
-        assertSame(ClayWorkTableOperations.ToolRequirement.ROLLING_PIN, operation.toolRequirement());
+        assertSame(ClayWorkTableToolRequirement.ROLLING_PIN, operation.toolRequirement());
         assertSame(ClayiumItems.RAW_CLAY_SLICER, operation.outputs().getFirst().item());
         assertEquals(2, operation.workTicks());
     }
@@ -40,7 +42,7 @@ class ClayWorkTableOperationsTest {
     void spatulaIsRequiredForRingPunchingRecipeData() {
         ClayWorkTableOperations.Operation operation = findByInputAndButton(ClayiumItems.CLAY_SMALL_DISC, 5);
 
-        assertSame(ClayWorkTableOperations.ToolRequirement.SPATULA, operation.toolRequirement());
+        assertSame(ClayWorkTableToolRequirement.SPATULA, operation.toolRequirement());
         assertSame(ClayiumItems.CLAY_SMALL_RING, operation.outputs().getFirst().item());
         assertSame(ClayiumItems.CLAY_SHORT_STICK, operation.outputs().get(1).item());
     }
@@ -61,7 +63,8 @@ class ClayWorkTableOperationsTest {
                 .filter(operation -> operation.input() == ClayiumItems.CLAY_PLATE && operation.buttonId() == 3)
                 .toList();
 
-        ClayWorkTableOperations.Operation operation = ClayWorkTableOperations.findBestMatch(matchingOperations)
+        ClayWorkTableOperations.Operation operation = matchingOperations.stream()
+                .max(Comparator.comparingInt(ClayWorkTableOperations.Operation::inputCount))
                 .orElseThrow();
 
         assertEquals(6, operation.inputCount());
@@ -71,22 +74,22 @@ class ClayWorkTableOperationsTest {
     @Test
     void workTableRecipesMatchLegacyClayWorkTableRecipes() {
         Set<RecipeSignature> expected = Set.of(
-                recipe(1, "clay_ball", 1, ClayWorkTableOperations.ToolRequirement.NONE, 4, "clay_stick:1"),
-                recipe(2, "clay_large_ball", 1, ClayWorkTableOperations.ToolRequirement.NONE, 30, "clay_disc:1"),
-                recipe(3, "clay_large_ball", 1, ClayWorkTableOperations.ToolRequirement.ROLLING_PIN, 4, "clay_disc:1", "clay_ball:2"),
-                recipe(1, "clay_large_ball", 1, ClayWorkTableOperations.ToolRequirement.NONE, 4, "clay_cylinder:1"),
-                recipe(2, "clay_plate", 1, ClayWorkTableOperations.ToolRequirement.NONE, 10, "clay_blade:1"),
-                recipe(3, "clay_plate", 1, ClayWorkTableOperations.ToolRequirement.ROLLING_PIN, 1, "clay_blade:1", "clay_ball:2"),
-                recipe(6, "clay_plate", 1, ClayWorkTableOperations.ToolRequirement.SLICER_OR_SPATULA, 3, "clay_stick:4"),
-                recipe(4, "clay_disc", 1, ClayWorkTableOperations.ToolRequirement.SLICER_OR_SPATULA, 4, "clay_plate:1", "clay_ball:2"),
-                recipe(5, "clay_disc", 1, ClayWorkTableOperations.ToolRequirement.SPATULA, 2, "clay_ring:1", "clay_small_disc:1"),
-                recipe(5, "clay_small_disc", 1, ClayWorkTableOperations.ToolRequirement.SPATULA, 1, "clay_small_ring:1", "clay_short_stick:1"),
-                recipe(1, "clay_cylinder", 1, ClayWorkTableOperations.ToolRequirement.NONE, 3, "clay_needle:1"),
-                recipe(6, "clay_cylinder", 1, ClayWorkTableOperations.ToolRequirement.SLICER_OR_SPATULA, 7, "clay_small_disc:8"),
-                recipe(2, "clay_disc", 1, ClayWorkTableOperations.ToolRequirement.NONE, 15, "raw_clay_slicer:1"),
-                recipe(3, "clay_disc", 1, ClayWorkTableOperations.ToolRequirement.ROLLING_PIN, 2, "raw_clay_slicer:1"),
-                recipe(3, "clay_plate", 6, ClayWorkTableOperations.ToolRequirement.ROLLING_PIN, 10, "clay_large_plate:1"),
-                recipe(1, "clay_plate", 3, ClayWorkTableOperations.ToolRequirement.NONE, 40, "clay_large_ball:1")
+                recipe(1, "clay_ball", 1, ClayWorkTableToolRequirement.NONE, 4, "clay_stick:1"),
+                recipe(2, "clay_large_ball", 1, ClayWorkTableToolRequirement.NONE, 30, "clay_disc:1"),
+                recipe(3, "clay_large_ball", 1, ClayWorkTableToolRequirement.ROLLING_PIN, 4, "clay_disc:1", "clay_ball:2"),
+                recipe(1, "clay_large_ball", 1, ClayWorkTableToolRequirement.NONE, 4, "clay_cylinder:1"),
+                recipe(2, "clay_plate", 1, ClayWorkTableToolRequirement.NONE, 10, "clay_blade:1"),
+                recipe(3, "clay_plate", 1, ClayWorkTableToolRequirement.ROLLING_PIN, 1, "clay_blade:1", "clay_ball:2"),
+                recipe(6, "clay_plate", 1, ClayWorkTableToolRequirement.SLICER_OR_SPATULA, 3, "clay_stick:4"),
+                recipe(4, "clay_disc", 1, ClayWorkTableToolRequirement.SLICER_OR_SPATULA, 4, "clay_plate:1", "clay_ball:2"),
+                recipe(5, "clay_disc", 1, ClayWorkTableToolRequirement.SPATULA, 2, "clay_ring:1", "clay_small_disc:1"),
+                recipe(5, "clay_small_disc", 1, ClayWorkTableToolRequirement.SPATULA, 1, "clay_small_ring:1", "clay_short_stick:1"),
+                recipe(1, "clay_cylinder", 1, ClayWorkTableToolRequirement.NONE, 3, "clay_needle:1"),
+                recipe(6, "clay_cylinder", 1, ClayWorkTableToolRequirement.SLICER_OR_SPATULA, 7, "clay_small_disc:8"),
+                recipe(2, "clay_disc", 1, ClayWorkTableToolRequirement.NONE, 15, "raw_clay_slicer:1"),
+                recipe(3, "clay_disc", 1, ClayWorkTableToolRequirement.ROLLING_PIN, 2, "raw_clay_slicer:1"),
+                recipe(3, "clay_plate", 6, ClayWorkTableToolRequirement.ROLLING_PIN, 10, "clay_large_plate:1"),
+                recipe(1, "clay_plate", 3, ClayWorkTableToolRequirement.NONE, 40, "clay_large_ball:1")
         );
         Set<RecipeSignature> actual = ClayWorkTableOperations.operations().stream()
                 .map(ClayWorkTableOperationsTest::signature)
@@ -115,7 +118,7 @@ class ClayWorkTableOperationsTest {
         );
     }
 
-    private static RecipeSignature recipe(int buttonId, String input, int inputCount, ClayWorkTableOperations.ToolRequirement toolRequirement, int workTicks, String... outputs) {
+    private static RecipeSignature recipe(int buttonId, String input, int inputCount, ClayWorkTableToolRequirement toolRequirement, int workTicks, String... outputs) {
         return new RecipeSignature(buttonId, input, inputCount, toolRequirement, workTicks, List.of(outputs));
     }
 
@@ -141,7 +144,7 @@ class ClayWorkTableOperationsTest {
             int buttonId,
             String input,
             int inputCount,
-            ClayWorkTableOperations.ToolRequirement toolRequirement,
+            ClayWorkTableToolRequirement toolRequirement,
             int workTicks,
             List<String> outputs
     ) {

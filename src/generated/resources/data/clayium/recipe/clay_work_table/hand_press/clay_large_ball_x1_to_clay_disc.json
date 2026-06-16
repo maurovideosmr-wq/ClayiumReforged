@@ -1,0 +1,12 @@
+{
+  "type": "clayium:clay_work_table",
+  "clicks": 30,
+  "input": "clayium:clay_large_ball",
+  "operation": "hand_press",
+  "outputs": [
+    {
+      "id": "clayium:clay_disc"
+    }
+  ],
+  "show_notification": false
+}

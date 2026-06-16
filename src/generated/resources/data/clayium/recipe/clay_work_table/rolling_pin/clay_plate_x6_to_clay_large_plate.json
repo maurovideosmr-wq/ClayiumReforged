@@ -1,0 +1,14 @@
+{
+  "type": "clayium:clay_work_table",
+  "clicks": 10,
+  "input": "clayium:clay_plate",
+  "input_count": 6,
+  "operation": "rolling_pin",
+  "outputs": [
+    {
+      "id": "clayium:clay_large_plate"
+    }
+  ],
+  "show_notification": false,
+  "tool": "rolling_pin"
+}

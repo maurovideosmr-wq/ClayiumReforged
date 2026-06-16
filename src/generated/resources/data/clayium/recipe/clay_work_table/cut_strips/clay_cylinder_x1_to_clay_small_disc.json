@@ -1,0 +1,14 @@
+{
+  "type": "clayium:clay_work_table",
+  "clicks": 7,
+  "input": "clayium:clay_cylinder",
+  "operation": "cut_strips",
+  "outputs": [
+    {
+      "count": 8,
+      "id": "clayium:clay_small_disc"
+    }
+  ],
+  "show_notification": false,
+  "tool": "slicer_or_spatula"
+}

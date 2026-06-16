@@ -15,7 +15,9 @@ public final class ClayiumCreativeTabs {
             .title(Component.translatable("itemGroup.clayium.main"))
             .icon(() -> ClayiumItems.DENSE_CLAY.get().getDefaultInstance())
             .displayItems((parameters, output) -> {
-                ClayiumItems.CREATIVE_ITEMS.forEach(item -> output.accept(item.get()));
+                ClayiumItems.CREATIVE_BLOCKS.forEach(item -> output.accept(item.get()));
+                ClayiumItems.CREATIVE_TOOLS.forEach(item -> output.accept(item.get()));
+                ClayiumItems.CREATIVE_PARTS.forEach(item -> output.accept(item.get()));
             })
             .build());
 

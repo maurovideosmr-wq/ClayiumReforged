@@ -1,0 +1,16 @@
+{
+  "type": "clayium:clay_work_table",
+  "clicks": 2,
+  "input": "clayium:clay_disc",
+  "operation": "cut_round",
+  "outputs": [
+    {
+      "id": "clayium:clay_ring"
+    },
+    {
+      "id": "clayium:clay_small_disc"
+    }
+  ],
+  "show_notification": false,
+  "tool": "spatula"
+}

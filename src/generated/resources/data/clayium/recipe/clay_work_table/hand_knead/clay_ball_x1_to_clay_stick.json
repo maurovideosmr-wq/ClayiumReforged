@@ -1,0 +1,12 @@
+{
+  "type": "clayium:clay_work_table",
+  "clicks": 4,
+  "input": "minecraft:clay_ball",
+  "operation": "hand_knead",
+  "outputs": [
+    {
+      "id": "clayium:clay_stick"
+    }
+  ],
+  "show_notification": false
+}

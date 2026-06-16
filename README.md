@@ -2,7 +2,7 @@
 
 Clayium Reforged is a NeoForge 26.x / Minecraft 26.x migration of the classic Clayium mod.
 
-This repository is in an early playable alpha. The project keeps the mod id and resource namespace as `clayium`, while modern source code lives under `dev.clayium.clayium`.
+This repository is in a Phase 1 playable alpha. The project keeps the mod id and resource namespace as `clayium`, while modern source code lives under `dev.clayium.clayium`.
 
 ## Current Target
 
@@ -13,9 +13,11 @@ This repository is in an early playable alpha. The project keeps the mod id and 
 - ModDevGradle: `2.0.141`
 - Mod version: `0.1.0-alpha.1`
 
-## Phase 1 Progress
+## Phase 1 Status
 
-Completed in the current foundation pass:
+Phase 1 is complete as the first playable NeoForge 26.x base. It covers the early clay loop from raw clay shaping through the Clay Work Table into the first Clay Machine Hull.
+
+Completed:
 
 - Clean NeoForge 26.x project scaffold with ModDevGradle 2.x.
 - Java package and registry structure for the new codebase.
@@ -33,10 +35,16 @@ Completed in the current foundation pass:
   - legacy/Figma slot layout
   - 5-slot internal storage with hidden in-progress input
   - repeated button presses advance processing progress
+  - in-progress operations lock to the original action to prevent hidden-input loss
   - fixed main/byproduct output slots with output locking
   - hover-only action button highlight
   - hover ghost output preview
   - all 16 legacy Work Table kneading recipes implemented and covered by tests
+- Data-driven Clay Work Table recipes:
+  - custom `clayium:clay_work_table` recipe type
+  - JSON/datapack loading
+  - datagen output for the Phase 1 legacy recipe seed
+  - shared recipe source for menu logic, JEI display, and tests
 - Basic JEI integration for Clay Work Table recipes:
   - one recipe page per Work Table operation
   - displays input, optional tool, main output, byproduct output, action button, and click count
@@ -53,6 +61,11 @@ Completed in the current foundation pass:
   - Jade, pending providers
   - LDLib2, pending broader production UI adapters
 - Removed unused Dense Clay large ball legacy item/resources.
+- Phase 1 datagen:
+  - blockstates, models, item models, lang, recipes, block loot tables, and mineable tags
+- Phase 1 automated coverage:
+  - unit tests for Work Table legacy recipe signatures and registry helpers
+  - GameTests for registry surface, Work Table datapack recipes, menu processing, crafting/smelting recipes, block drops, Work Table inventory drops, and wooden-tier harvest behavior
 
 ## Not Yet Implemented
 
@@ -61,8 +74,7 @@ Completed in the current foundation pass:
 - JEI coverage beyond the Clay Work Table category.
 - Jade providers and LDLib-driven production UI adapters.
 - IC2, GregTech, NEI, Multipart, MineTweaker, RF, CoFH API, or other old integrations.
-- Complete datagen providers.
-- Full data-driven GameTest coverage for Work Table progression and the full Phase 1 loop.
+- Full material catalog, machine tiers, logistics, area tools, PAN systems, and later-game Clayium content.
 
 ## Development Notes
 
@@ -95,4 +107,4 @@ Manual client smoke:
 
 ## Repository Status
 
-This is a migration work-in-progress. The current branch represents the Phase 1 playable base, not a finished port.
+This is a migration work-in-progress. The current branch represents the completed Phase 1 playable base, not a finished full Clayium port.
