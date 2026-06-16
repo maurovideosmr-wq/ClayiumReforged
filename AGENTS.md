@@ -141,6 +141,7 @@ When the user requests a durable behavior change, record it here or in the relev
 - Treat Codex CLI/Desktop context compact as unreliable for long work until the user explicitly says this changed. Do not depend on `/compact`, auto compact, or remote compact to preserve project continuity.
 - Work in short phases for long tasks. Before a phase risks large context or after meaningful changes, record a manual handoff in `docs/devlogs.md` instead of waiting for compaction.
 - Handoff/devlog entries should include current goal, changed files, key decisions, verification state, unresolved TODOs, and next commands.
+- When migrating any legacy Clayium content, update `docs/legacy-port-ledger.md` in the same change. If the ledger lacks a row, add one before marking the migration complete.
 
 ## Child DOX Index
 

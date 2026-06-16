@@ -134,3 +134,12 @@
 - Verification state: `.\gradlew compileJava --no-watch-fs --stacktrace` passed; `.\gradlew test --no-watch-fs --stacktrace` passed; `.\gradlew runGameTestServer --no-watch-fs --stacktrace` passed and logs showed `clayium:gametest/default` plus 108 required tests passed; `.\gradlew clean build --no-watch-fs --stacktrace` passed; `git diff --check` passed with CRLF warnings only.
 - Unresolved TODOs: manually inspect the client screen to ensure disabled buttons during in-progress work feel clear enough; extend this same lock concept to future machines that reserve inputs across multiple clicks or ticks.
 - Next commands: review and commit the Work Table lock fix with the pending Phase 1 batch.
+
+## 2026-06-17 Phase 1.5 Ledger Start
+
+- Current goal: start Phase 1.5 by freezing the Phase 1 baseline as an auditable reference, creating the legacy migration ledger, and splitting naming/deferred/verification decisions into dedicated docs.
+- Changed files: `AGENTS.md`, `docs/AGENTS.md`, `docs/phase1-baseline.md`, `docs/legacy-port-ledger.md`, `docs/legacy-id-naming-rules.md`, `docs/deferred-legacy-features.md`, `docs/phase1.5-verification.md`, `docs/devlogs.md`.
+- Key decisions: use `c3fedce Complete phase 1 playable base` as the Phase 1 baseline; make `legacy-port-ledger.md` a checklist and require every future legacy migration to update it in the same change; keep old metadata id decisions in a separate naming document; keep dropped/deferred old systems out of the ledger notes unless the decision is also recorded in `deferred-legacy-features.md`.
+- Verification state: re-read root/docs DOX and `docs/clayium-migration-roadmap.md`; inspected old `CBlocks`, `CItems`, `CMaterials`, `CRecipes`, GUI, tile, network, and plugin domains for the initial ledger shape; `git diff --check` passed with LF/CRLF working-copy warnings only; user manually confirmed the Clay Work Table byproduct ghost/tooltip is present and the apparent missing byproduct was tooltip occlusion.
+- Unresolved TODOs: run the full Phase 1.5 command checklist in `docs/phase1.5-verification.md`; perform the client Work Table/JEI visual checklist; expand ledger rows as each Phase 2+ content family is actually migrated.
+- Next commands: `git diff --check`, then run the Phase 1.5 Gradle/client checklist with `--no-watch-fs` when ready.
