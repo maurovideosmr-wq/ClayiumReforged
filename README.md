@@ -37,6 +37,10 @@ Completed in the current foundation pass:
   - hover-only action button highlight
   - hover ghost output preview
   - all 16 legacy Work Table kneading recipes implemented and covered by tests
+- Basic JEI integration for Clay Work Table recipes:
+  - one recipe page per Work Table operation
+  - displays input, optional tool, main output, byproduct output, action button, and click count
+  - aligned to the Figma `ClayWrokTableJEI` frame
 - Crafting and smelting JSON for the first playable loop:
   - dense clay
   - clay work table
@@ -44,16 +48,18 @@ Completed in the current foundation pass:
   - baked clay tools
   - raw clay machine hull
   - clay machine hull from smelting
-- Optional dev/runtime dependencies resolved for later integration:
-  - JEI
-  - Jade
-  - LDLib2
+- Optional dev/runtime dependencies resolved for integration work:
+  - JEI, with the first Work Table category implemented
+  - Jade, pending providers
+  - LDLib2, pending broader production UI adapters
+- Removed unused Dense Clay large ball legacy item/resources.
 
 ## Not Yet Implemented
 
 - Full machine and energy systems.
 - 1.7.10 world/save compatibility.
-- JEI categories, Jade providers, and LDLib-driven production UI adapters.
+- JEI coverage beyond the Clay Work Table category.
+- Jade providers and LDLib-driven production UI adapters.
 - IC2, GregTech, NEI, Multipart, MineTweaker, RF, CoFH API, or other old integrations.
 - Complete datagen providers.
 - Full data-driven GameTest coverage for Work Table progression and the full Phase 1 loop.

@@ -1,5 +1,6 @@
 {
   "itemGroup.clayium.main": "Clayium Reforged",
+  "jei.clayium.category.clay_work_table": "Clay Work Table",
   "container.clayium.clay_work_table": "Clay Work Table",
   "container.clayium.clay_work_table.action.hand_knead": "Hand knead",
   "container.clayium.clay_work_table.action.hand_press": "Hand press",
@@ -48,7 +49,6 @@
   "item.clayium.dense_clay_small_disc": "Small Dense Clay Disc",
   "item.clayium.dense_clay_cylinder": "Dense Clay Cylinder",
   "item.clayium.dense_clay_pipe": "Dense Clay Pipe",
-  "item.clayium.dense_clay_large_ball": "Large Dense Clay Ball",
   "item.clayium.dense_clay_large_plate": "Large Dense Clay Plate",
   "item.clayium.dense_clay_grinding_head": "Dense Clay Grinding Head",
   "item.clayium.dense_clay_bearing": "Dense Clay Bearing",

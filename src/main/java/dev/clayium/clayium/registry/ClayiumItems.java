@@ -62,7 +62,6 @@ public final class ClayiumItems {
     public static final DeferredItem<Item> DENSE_CLAY_SMALL_DISC = item("dense_clay_small_disc");
     public static final DeferredItem<Item> DENSE_CLAY_CYLINDER = item("dense_clay_cylinder");
     public static final DeferredItem<Item> DENSE_CLAY_PIPE = item("dense_clay_pipe");
-    public static final DeferredItem<Item> DENSE_CLAY_LARGE_BALL = item("dense_clay_large_ball");
     public static final DeferredItem<Item> DENSE_CLAY_LARGE_PLATE = item("dense_clay_large_plate");
     public static final DeferredItem<Item> DENSE_CLAY_GRINDING_HEAD = item("dense_clay_grinding_head");
     public static final DeferredItem<Item> DENSE_CLAY_BEARING = item("dense_clay_bearing");

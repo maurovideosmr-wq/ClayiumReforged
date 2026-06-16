@@ -80,3 +80,12 @@
 - Verification state: old `ClayWorkTableRecipes` contains 16 kneading recipes and `ClayWorkTableOperations` now has a unit test asserting those 16 signatures; `.\gradlew test --stacktrace --no-watch-fs --console=plain` passed; `.\gradlew build --stacktrace --no-watch-fs --console=plain` passed; `.\gradlew runGameTestServer --stacktrace --no-watch-fs --console=plain` passed.
 - Unresolved TODOs: run client smoke/manual visual inspection for the updated inset slot styling and the single-item repeated-click path.
 - Next commands: `.\gradlew clean build --stacktrace --no-watch-fs --console=plain`, then `.\gradlew runClient --stacktrace --no-watch-fs --console=plain` for visual/manual verification.
+
+## 2026-06-17 Clay Work Table JEI Adapter
+
+- Current goal: add JEI recipe viewing for Clay Work Table operations using the Figma `ClayWrokTableJEI` layout and old NEI behavior as reference.
+- Changed files: `src/main/java/dev/clayium/clayium/client/jei/**`, `src/main/resources/assets/clayium/lang/en_us.json`, `src/AGENTS.md`, `docs/devlogs.md`.
+- Key decisions: JEI remains optional (`compileOnly` plus `localRuntime`); the category renders one operation per recipe page, displays the required input, optional tool cycle, main output, optional byproduct, the selected action button, and the work tick count above that button.
+- Verification state: `.\gradlew test --stacktrace --no-watch-fs --console=plain` passed; `.\gradlew build --stacktrace --no-watch-fs --console=plain` passed; `.\gradlew runGameTestServer --stacktrace --no-watch-fs --console=plain` passed; `.\gradlew runData --stacktrace --no-watch-fs --console=plain` passed with no generated files; `.\gradlew runServer --stacktrace --no-watch-fs --console=plain` reached `Done` and was manually stopped after the stdin `stop` command did not terminate the long-running server process; a controlled `.\gradlew runClient --stacktrace --no-watch-fs --console=plain` smoke reached `Sound engine started` and created `jei:textures/atlas/gui.png-atlas` before being manually stopped.
+- Unresolved TODOs: inspect the JEI category visually in client and confirm the Figma-aligned pixels in-game; Jade logged `Failed to collect shearable blocks` during server startup, unrelated to Clayium's JEI adapter but worth tracking before treating Jade as stable.
+- Next commands: run client manually, open JEI's Clay Work Table category, and compare input/tool/output/button positions against the Figma `ClayWrokTableJEI` frame.

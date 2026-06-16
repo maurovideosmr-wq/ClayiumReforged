@@ -26,6 +26,8 @@
 - Keep Clay Work Table visible slots aligned to the Figma/legacy layout: input at 17,30, tool at 80,17, main output at 143,30, and byproduct output at 143,55.
 - Keep Clay Work Table processing server-authoritative: action buttons advance `cookTime` one press at a time, progress is `cookTime / timeToCook`, output slots are fixed-position locked, and button yellow state is hover-only.
 - Draw Clay Work Table slot frames as inset/recessed controls: dark top/left edge, light bottom/right edge.
+- Keep JEI Clay Work Table integration client-only under `dev.clayium.clayium.client.jei`; generate JEI recipe displays from `ClayWorkTableOperations` instead of maintaining a second recipe list.
+- Keep the JEI Clay Work Table category aligned to the Figma `ClayWrokTableJEI` frame: 176x62 background, input item at 17,16, tool item at 80,3, main output at 143,16, byproduct output at 143,41, and action buttons at y=42.
 
 # Verification
 
