@@ -21,6 +21,11 @@
 - Prefer small compile-driven migration patches.
 - Register first-phase objects through `DeferredRegister` registries in `dev.clayium.clayium.registry`.
 - Keep generated or copied legacy PNG usage limited to assets required by the current playable phase.
+- Keep `textures/gui/container/clay_work_table.png` as the 96x80 LDLib atlas: y=0 arrow progress, y=16 arrow base, and y=32/48/64 disabled/available/hover 16x16 action buttons ordered hand knead, hand press, rolling pin, cut plate, cut round, cut strips.
+- Keep Clay Work Table storage at 5 slots: visible input/tool/main output/byproduct output slots `0..3`, plus hidden in-progress input slot `4`.
+- Keep Clay Work Table visible slots aligned to the Figma/legacy layout: input at 17,30, tool at 80,17, main output at 143,30, and byproduct output at 143,55.
+- Keep Clay Work Table processing server-authoritative: action buttons advance `cookTime` one press at a time, progress is `cookTime / timeToCook`, output slots are fixed-position locked, and button yellow state is hover-only.
+- Draw Clay Work Table slot frames as inset/recessed controls: dark top/left edge, light bottom/right edge.
 
 # Verification
 

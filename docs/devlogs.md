@@ -53,3 +53,30 @@
 - Verification state: `.\gradlew test --no-watch-fs --stacktrace` passed; `.\gradlew build --no-watch-fs --stacktrace` passed; `.\gradlew runGameTestServer --no-watch-fs --stacktrace` passed; `run/logs/latest.log` has no `Couldn't parse data file` matches after the run.
 - Unresolved TODOs: `clean build` still needs a clear run directory/build artifact lock window if manual client testing keeps files open.
 - Next commands: rerun `.\gradlew clean build --no-watch-fs --stacktrace` after closing any client/manual test process, then continue with datagen/GameTest coverage.
+
+## 2026-06-17 Clay Work Table LDLib Atlas Pass
+
+- Current goal: adapt Clay Work Table GUI to the Figma `CLAYGUI` frame and the new compact LDLib atlas.
+- Changed files: `src/main/java/dev/clayium/clayium/client/screen/ClayWorkTableScreen.java`, `src/main/java/dev/clayium/clayium/menu/ClayWorkTableMenu.java`, `src/main/java/dev/clayium/clayium/menu/ClayWorkTableOperations.java`, `src/main/resources/assets/clayium/textures/gui/container/clay_work_table.png`, `src/main/resources/assets/clayium/lang/en_us.json`, `src/test/java/dev/clayium/clayium/menu/ClayWorkTableOperationsTest.java`, `build.gradle`, `gradle.properties`, `src/main/templates/META-INF/neoforge.mods.toml`, `src/AGENTS.md`, `docs/devlogs.md`.
+- Key decisions: the packaged GUI texture is now a 96x80 atlas instead of a full 256x256 GUI sheet; the screen draws Figma-aligned background and slot primitives, uses LDLib2 `GUIContext`/`SpriteTexture` for arrow and action button slices, and returns the Work Table to the legacy/Figma 4-slot layout.
+- Verification state: `.\gradlew test --no-watch-fs --stacktrace --console=plain` passed; `.\gradlew build --no-watch-fs --stacktrace --console=plain` passed; `.\gradlew runData --no-watch-fs --stacktrace --console=plain` passed with no generated files; `.\gradlew runGameTestServer --no-watch-fs --stacktrace --console=plain` passed in a dedicated-server environment; after stopping Gradle daemons, `.\gradlew clean build --no-watch-fs --stacktrace --console=plain` passed.
+- Unresolved TODOs: run client smoke to inspect exact pixel placement and action-button states in Minecraft; `run/logs/latest.log` and `run/logs/debug.log` were locked by another process during `runData` startup but did not fail the task; the first `clean build` attempt hit a lock on `build/moddev/artifacts/minecraft-patched-26.1.2.76.jar` and succeeded after `.\gradlew --stop`.
+- Next commands: `.\gradlew runClient --no-watch-fs --stacktrace --console=plain` for visual inspection, then adjust any pixel offsets observed in-game.
+
+## 2026-06-17 Clay Work Table Feedback Repair
+
+- Current goal: repair Clay Work Table GUI and processing feedback from manual review: hover-only yellow buttons, ghost output previews, fixed-slot output locking, and legacy repeated-button processing.
+- Changed files: `src/main/java/dev/clayium/clayium/client/screen/ClayWorkTableScreen.java`, `src/main/java/dev/clayium/clayium/menu/ClayWorkTableMenu.java`, `src/main/java/dev/clayium/clayium/menu/ClayWorkTableOperations.java`, `src/main/java/dev/clayium/clayium/block/entity/ClayWorkTableBlockEntity.java`, `src/main/resources/assets/clayium/lang/en_us.json`, `src/test/java/dev/clayium/clayium/menu/ClayWorkTableOperationsTest.java`, `src/AGENTS.md`, `docs/devlogs.md`.
+- Key decisions: restored a hidden slot 4 for in-progress input and 3 menu data values for `cookTime`, `timeToCook`, and `cookingMethod`; one button press advances one unit of work; completion clears highlight state; outputs merge only into their fixed visible slots; same-input recipes now choose the largest matching input count like the 1.7.10 recipe map.
+- Verification state: `.\gradlew test --stacktrace --no-watch-fs --console=plain` passed; `.\gradlew build --stacktrace --no-watch-fs --console=plain` passed; `.\gradlew runData --stacktrace --no-watch-fs --console=plain` passed with no generated files; `.\gradlew runGameTestServer --stacktrace --no-watch-fs --console=plain` passed as dedicated-server smoke; `.\gradlew clean build --stacktrace --no-watch-fs --console=plain` passed.
+- Unresolved TODOs: add real 26.x GameTests for Work Table button progression and output locking; run client smoke/manual visual inspection for exact pixel feel and hover ghost presentation.
+- Next commands: `.\gradlew runClient --stacktrace --no-watch-fs --console=plain`, then test in-game with blocked output slots, four hand-knead presses, and hover ghost previews.
+
+## 2026-06-17 Clay Work Table Manual Feedback Follow-up
+
+- Current goal: address manual feedback that slot frames looked raised and single-item Work Table processing could not continue after the first click; verify all old Work Table recipes are present.
+- Changed files: `src/main/java/dev/clayium/clayium/client/screen/ClayWorkTableScreen.java`, `src/main/java/dev/clayium/clayium/menu/ClayWorkTableMenu.java`, `src/main/java/dev/clayium/clayium/menu/ClayWorkTableOperations.java`, `src/test/java/dev/clayium/clayium/menu/ClayWorkTableOperationsTest.java`, `src/AGENTS.md`, `docs/devlogs.md`.
+- Key decisions: Work Table slots now render as inset frames with dark top/left and light bottom/right edges; client button availability can continue the current method from synced `cookingMethod/timeToCook` because the hidden in-progress slot is not a network-visible slot; server clicks still validate the hidden slot strictly.
+- Verification state: old `ClayWorkTableRecipes` contains 16 kneading recipes and `ClayWorkTableOperations` now has a unit test asserting those 16 signatures; `.\gradlew test --stacktrace --no-watch-fs --console=plain` passed; `.\gradlew build --stacktrace --no-watch-fs --console=plain` passed; `.\gradlew runGameTestServer --stacktrace --no-watch-fs --console=plain` passed.
+- Unresolved TODOs: run client smoke/manual visual inspection for the updated inset slot styling and the single-item repeated-click path.
+- Next commands: `.\gradlew clean build --stacktrace --no-watch-fs --console=plain`, then `.\gradlew runClient --stacktrace --no-watch-fs --console=plain` for visual/manual verification.

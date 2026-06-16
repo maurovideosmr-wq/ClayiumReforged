@@ -1,7 +1,12 @@
 {
   "itemGroup.clayium.main": "Clayium Reforged",
   "container.clayium.clay_work_table": "Clay Work Table",
-  "container.clayium.clay_work_table.last_action": "Button %s: %s ticks",
+  "container.clayium.clay_work_table.action.hand_knead": "Hand knead",
+  "container.clayium.clay_work_table.action.hand_press": "Hand press",
+  "container.clayium.clay_work_table.action.rolling_pin": "Rolling pin",
+  "container.clayium.clay_work_table.action.cut_plate": "Cut plate",
+  "container.clayium.clay_work_table.action.cut_round": "Cut round",
+  "container.clayium.clay_work_table.action.cut_strips": "Cut strips",
   "block.clayium.dense_clay": "Dense Clay",
   "block.clayium.clay_work_table": "Clay Work Table",
   "block.clayium.raw_clay_machine_hull": "Raw Clay Machine Hull",

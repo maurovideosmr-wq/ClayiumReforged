@@ -2,6 +2,7 @@ package dev.clayium.clayium.menu;
 
 import dev.clayium.clayium.registry.ClayiumItems;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -13,7 +14,9 @@ public final class ClayWorkTableOperations {
     public static final int INPUT_SLOT = 0;
     public static final int TOOL_SLOT = 1;
     public static final int FIRST_OUTPUT_SLOT = 2;
-    public static final int OUTPUT_SLOT_COUNT = 3;
+    public static final int OUTPUT_SLOT_COUNT = 2;
+    public static final int VISIBLE_SLOT_COUNT = 4;
+    public static final int INTERNAL_INPUT_SLOT = 4;
     public static final int SLOT_COUNT = 5;
 
     private static final List<Operation> OPERATIONS = List.of(
@@ -39,9 +42,14 @@ public final class ClayWorkTableOperations {
     }
 
     public static Optional<Operation> find(int buttonId, ItemStack input, ItemStack tool) {
-        return OPERATIONS.stream()
+        return findBestMatch(OPERATIONS.stream()
                 .filter(operation -> operation.matches(buttonId, input, tool))
-                .findFirst();
+                .toList());
+    }
+
+    static Optional<Operation> findBestMatch(List<Operation> matchingOperations) {
+        return matchingOperations.stream()
+                .max(Comparator.comparingInt(Operation::inputCount));
     }
 
     public static List<Operation> operations() {
@@ -52,6 +60,16 @@ public final class ClayWorkTableOperations {
         return stack.is(ClayiumItems.CLAY_ROLLING_PIN.get())
                 || stack.is(ClayiumItems.CLAY_SLICER.get())
                 || stack.is(ClayiumItems.CLAY_SPATULA.get());
+    }
+
+    public static boolean canUseToolForButton(int buttonId, ItemStack tool) {
+        return switch (buttonId) {
+            case 1, 2 -> true;
+            case 3 -> ToolRequirement.ROLLING_PIN.matches(tool);
+            case 4, 6 -> ToolRequirement.SLICER_OR_SPATULA.matches(tool);
+            case 5 -> ToolRequirement.SPATULA.matches(tool);
+            default -> false;
+        };
     }
 
     public static boolean isKnownInput(ItemStack stack) {
@@ -74,14 +92,14 @@ public final class ClayWorkTableOperations {
             int workTicks,
             List<Output> outputs
     ) {
-        private boolean matches(int attemptedButtonId, ItemStack inputStack, ItemStack toolStack) {
+        boolean matches(int attemptedButtonId, ItemStack inputStack, ItemStack toolStack) {
             return this.buttonId == attemptedButtonId
                     && inputStack.is(this.input.get().asItem())
                     && inputStack.getCount() >= this.inputCount
                     && this.toolRequirement.matches(toolStack);
         }
 
-        List<ItemStack> createOutputs() {
+        public List<ItemStack> createOutputs() {
             List<ItemStack> stacks = new ArrayList<>();
             for (Output output : this.outputs) {
                 stacks.add(output.createStack());

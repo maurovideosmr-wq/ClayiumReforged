@@ -3,6 +3,7 @@ package dev.clayium.clayium.menu;
 import dev.clayium.clayium.registry.ClayiumBlocks;
 import dev.clayium.clayium.registry.ClayiumMenus;
 import java.util.List;
+import java.util.Optional;
 import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
@@ -15,7 +16,12 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 
 public class ClayWorkTableMenu extends AbstractContainerMenu {
-    private static final int PLAYER_INVENTORY_START = ClayWorkTableOperations.SLOT_COUNT;
+    public static final int DATA_COUNT = 3;
+
+    private static final int DATA_COOK_TIME = 0;
+    private static final int DATA_TIME_TO_COOK = 1;
+    private static final int DATA_COOKING_METHOD = 2;
+    private static final int PLAYER_INVENTORY_START = ClayWorkTableOperations.VISIBLE_SLOT_COUNT;
     private static final int PLAYER_INVENTORY_END = PLAYER_INVENTORY_START + 27;
     private static final int HOTBAR_END = PLAYER_INVENTORY_END + 9;
 
@@ -28,31 +34,30 @@ public class ClayWorkTableMenu extends AbstractContainerMenu {
     }
 
     public ClayWorkTableMenu(int containerId, Inventory playerInventory, ContainerLevelAccess access) {
-        this(containerId, playerInventory, access, new SimpleContainer(ClayWorkTableOperations.SLOT_COUNT), new SimpleContainerData(2));
+        this(containerId, playerInventory, access, new SimpleContainer(ClayWorkTableOperations.SLOT_COUNT), new SimpleContainerData(DATA_COUNT));
     }
 
     public ClayWorkTableMenu(int containerId, Inventory playerInventory, ContainerLevelAccess access, Container table, ContainerData data) {
         super(ClayiumMenus.CLAY_WORK_TABLE.get(), containerId);
         checkContainerSize(table, ClayWorkTableOperations.SLOT_COUNT);
-        checkContainerDataCount(data, 2);
+        checkContainerDataCount(data, DATA_COUNT);
         this.table = table;
         this.data = data;
         this.access = access;
 
-        this.addSlot(new Slot(table, ClayWorkTableOperations.INPUT_SLOT, 44, 35));
-        this.addSlot(new ToolSlot(table, ClayWorkTableOperations.TOOL_SLOT, 44, 57));
-        this.addSlot(new OutputSlot(table, ClayWorkTableOperations.FIRST_OUTPUT_SLOT, 116, 26));
-        this.addSlot(new OutputSlot(table, ClayWorkTableOperations.FIRST_OUTPUT_SLOT + 1, 134, 26));
-        this.addSlot(new OutputSlot(table, ClayWorkTableOperations.FIRST_OUTPUT_SLOT + 2, 152, 26));
+        this.addSlot(new Slot(table, ClayWorkTableOperations.INPUT_SLOT, 17, 30));
+        this.addSlot(new ToolSlot(table, ClayWorkTableOperations.TOOL_SLOT, 80, 17));
+        this.addSlot(new OutputSlot(table, ClayWorkTableOperations.FIRST_OUTPUT_SLOT, 143, 30));
+        this.addSlot(new OutputSlot(table, ClayWorkTableOperations.FIRST_OUTPUT_SLOT + 1, 143, 55));
 
         for (int row = 0; row < 3; row++) {
             for (int column = 0; column < 9; column++) {
-                this.addSlot(new Slot(playerInventory, column + row * 9 + 9, 8 + column * 18, 94 + row * 18));
+                this.addSlot(new Slot(playerInventory, column + row * 9 + 9, 8 + column * 18, 84 + row * 18));
             }
         }
 
         for (int column = 0; column < 9; column++) {
-            this.addSlot(new Slot(playerInventory, column, 8 + column * 18, 152));
+            this.addSlot(new Slot(playerInventory, column, 8 + column * 18, 142));
         }
 
         this.addDataSlots(data);
@@ -64,7 +69,7 @@ public class ClayWorkTableMenu extends AbstractContainerMenu {
             return false;
         }
         if (!player.level().isClientSide()) {
-            this.processButton(id);
+            this.pushButton(id);
         }
         return true;
     }
@@ -113,79 +118,178 @@ public class ClayWorkTableMenu extends AbstractContainerMenu {
         return stillValid(this.access, player, ClayiumBlocks.CLAY_WORK_TABLE.get());
     }
 
-    public int getLastWorkTicks() {
-        return this.data.get(0);
+    public int getCookTime() {
+        return this.data.get(DATA_COOK_TIME);
     }
 
-    public int getLastButtonId() {
-        return this.data.get(1);
+    public int getTimeToCook() {
+        return this.data.get(DATA_TIME_TO_COOK);
     }
 
-    private void processButton(int buttonId) {
-        ItemStack input = this.table.getItem(ClayWorkTableOperations.INPUT_SLOT);
-        ItemStack tool = this.table.getItem(ClayWorkTableOperations.TOOL_SLOT);
-        ClayWorkTableOperations.find(buttonId, input, tool)
+    public int getCookingMethod() {
+        return this.data.get(DATA_COOKING_METHOD);
+    }
+
+    public int getCookProgressScaled(int pixels) {
+        int timeToCook = this.getTimeToCook();
+        if (timeToCook == 0 || this.getCookingMethod() == 0) {
+            return 0;
+        }
+        return this.getCookTime() * pixels / timeToCook;
+    }
+
+    public boolean canProcessButton(int buttonId) {
+        return this.getButtonState(buttonId) != 0;
+    }
+
+    public int getButtonState(int buttonId) {
+        return this.getButtonState(buttonId, true);
+    }
+
+    private int getServerButtonState(int buttonId) {
+        return this.getButtonState(buttonId, false);
+    }
+
+    private int getButtonState(int buttonId, boolean allowSyncedContinuationFallback) {
+        int cookingMethod = this.getCookingMethod();
+        if (cookingMethod != 0 && cookingMethod == buttonId) {
+            if (this.findProcessableOperation(buttonId, ClayWorkTableOperations.INTERNAL_INPUT_SLOT).isPresent()) {
+                return 1;
+            }
+            if (allowSyncedContinuationFallback && this.getTimeToCook() > 0 && ClayWorkTableOperations.canUseToolForButton(buttonId, this.table.getItem(ClayWorkTableOperations.TOOL_SLOT))) {
+                return 1;
+            }
+        }
+        Optional<ClayWorkTableOperations.Operation> inputOperation = this.findProcessableOperation(buttonId, ClayWorkTableOperations.INPUT_SLOT);
+        if (inputOperation.isPresent()) {
+            return cookingMethod == 0 ? 1 : 2;
+        }
+        return 0;
+    }
+
+    public int getWorkTicksForButton(int buttonId) {
+        return this.findPreviewOperation(buttonId)
+                .map(ClayWorkTableOperations.Operation::workTicks)
+                .orElse(0);
+    }
+
+    public List<ItemStack> getPreviewOutputs(int buttonId) {
+        if (this.getButtonState(buttonId) != 1) {
+            return List.of();
+        }
+        return this.findPreviewOperation(buttonId)
                 .filter(operation -> this.canFitOutputs(operation.createOutputs()))
-                .ifPresent(operation -> {
-                    input.shrink(operation.inputCount());
-                    this.addOutputs(operation.createOutputs());
-                    this.data.set(0, operation.workTicks());
-                    this.data.set(1, buttonId);
-                    this.table.setChanged();
-                    this.broadcastChanges();
-                });
+                .map(ClayWorkTableOperations.Operation::createOutputs)
+                .orElse(List.of());
+    }
+
+    private void pushButton(int buttonId) {
+        int buttonState = this.getServerButtonState(buttonId);
+        if (buttonState == 0) {
+            return;
+        }
+        if (buttonState == 2) {
+            this.clearWorkState();
+            this.table.setChanged();
+            this.broadcastChanges();
+            return;
+        }
+        if (this.getCookingMethod() == 0 && !this.startWork(buttonId)) {
+            return;
+        }
+
+        this.data.set(DATA_COOK_TIME, this.getCookTime() + 1);
+        if (this.getCookTime() >= this.getTimeToCook()) {
+            this.completeWork(buttonId);
+        }
+        this.table.setChanged();
+        this.broadcastChanges();
+    }
+
+    private boolean startWork(int buttonId) {
+        Optional<ClayWorkTableOperations.Operation> operation = this.findProcessableOperation(buttonId, ClayWorkTableOperations.INPUT_SLOT);
+        if (operation.isEmpty()) {
+            return false;
+        }
+        ItemStack input = this.table.getItem(ClayWorkTableOperations.INPUT_SLOT);
+        ItemStack reservedInput = input.split(operation.get().inputCount());
+        if (input.isEmpty()) {
+            this.table.setItem(ClayWorkTableOperations.INPUT_SLOT, ItemStack.EMPTY);
+        }
+        this.table.setItem(ClayWorkTableOperations.INTERNAL_INPUT_SLOT, reservedInput);
+        this.data.set(DATA_COOK_TIME, 0);
+        this.data.set(DATA_TIME_TO_COOK, operation.get().workTicks());
+        this.data.set(DATA_COOKING_METHOD, buttonId);
+        return true;
+    }
+
+    private void completeWork(int buttonId) {
+        this.findProcessableOperation(buttonId, ClayWorkTableOperations.INTERNAL_INPUT_SLOT)
+                .map(ClayWorkTableOperations.Operation::createOutputs)
+                .filter(this::canFitOutputs)
+                .ifPresent(this::addOutputs);
+        this.clearWorkState();
+    }
+
+    private void clearWorkState() {
+        this.data.set(DATA_COOK_TIME, 0);
+        this.data.set(DATA_TIME_TO_COOK, 0);
+        this.data.set(DATA_COOKING_METHOD, 0);
+        this.table.setItem(ClayWorkTableOperations.INTERNAL_INPUT_SLOT, ItemStack.EMPTY);
+    }
+
+    private Optional<ClayWorkTableOperations.Operation> findPreviewOperation(int buttonId) {
+        if (this.getCookingMethod() == buttonId) {
+            Optional<ClayWorkTableOperations.Operation> internalOperation = this.findProcessableOperation(buttonId, ClayWorkTableOperations.INTERNAL_INPUT_SLOT);
+            if (internalOperation.isPresent()) {
+                return internalOperation;
+            }
+        }
+        return this.findProcessableOperation(buttonId, ClayWorkTableOperations.INPUT_SLOT);
+    }
+
+    private Optional<ClayWorkTableOperations.Operation> findProcessableOperation(int buttonId, int inputSlot) {
+        ItemStack input = this.table.getItem(inputSlot);
+        ItemStack tool = this.table.getItem(ClayWorkTableOperations.TOOL_SLOT);
+        return ClayWorkTableOperations.find(buttonId, input, tool)
+                .filter(operation -> this.canFitOutputs(operation.createOutputs()));
     }
 
     private boolean canFitOutputs(List<ItemStack> outputs) {
-        ItemStack[] simulated = new ItemStack[ClayWorkTableOperations.OUTPUT_SLOT_COUNT];
-        for (int index = 0; index < simulated.length; index++) {
-            simulated[index] = this.table.getItem(ClayWorkTableOperations.FIRST_OUTPUT_SLOT + index).copy();
+        if (outputs.size() > ClayWorkTableOperations.OUTPUT_SLOT_COUNT) {
+            return false;
         }
-
-        for (ItemStack output : outputs) {
-            ItemStack remaining = output.copy();
-            for (int index = 0; index < simulated.length; index++) {
-                ItemStack slotStack = simulated[index];
-                if (slotStack.isEmpty()) {
-                    simulated[index] = remaining.copy();
-                    remaining.setCount(0);
-                    break;
-                }
-                if (ItemStack.isSameItemSameComponents(slotStack, remaining) && slotStack.getCount() < slotStack.getMaxStackSize()) {
-                    int move = Math.min(remaining.getCount(), slotStack.getMaxStackSize() - slotStack.getCount());
-                    slotStack.grow(move);
-                    remaining.shrink(move);
-                    if (remaining.isEmpty()) {
-                        break;
-                    }
-                }
-            }
-            if (!remaining.isEmpty()) {
+        for (int index = 0; index < outputs.size(); index++) {
+            if (!this.canFitOutput(ClayWorkTableOperations.FIRST_OUTPUT_SLOT + index, outputs.get(index))) {
                 return false;
             }
         }
         return true;
     }
 
+    private boolean canFitOutput(int slot, ItemStack output) {
+        if (output.isEmpty()) {
+            return true;
+        }
+        ItemStack existing = this.table.getItem(slot);
+        int maxStackSize = Math.min(this.table.getMaxStackSize(), output.getMaxStackSize());
+        if (existing.isEmpty()) {
+            return output.getCount() <= maxStackSize;
+        }
+        return ItemStack.isSameItemSameComponents(existing, output)
+                && existing.getCount() + output.getCount() <= Math.min(maxStackSize, existing.getMaxStackSize());
+    }
+
     private void addOutputs(List<ItemStack> outputs) {
-        for (ItemStack output : outputs) {
-            ItemStack remaining = output.copy();
-            for (int slot = ClayWorkTableOperations.FIRST_OUTPUT_SLOT; slot < ClayWorkTableOperations.SLOT_COUNT; slot++) {
-                ItemStack existing = this.table.getItem(slot);
-                if (existing.isEmpty()) {
-                    this.table.setItem(slot, remaining.copy());
-                    remaining.setCount(0);
-                    break;
-                }
-                if (ItemStack.isSameItemSameComponents(existing, remaining) && existing.getCount() < existing.getMaxStackSize()) {
-                    int move = Math.min(remaining.getCount(), existing.getMaxStackSize() - existing.getCount());
-                    existing.grow(move);
-                    remaining.shrink(move);
-                    this.table.setChanged();
-                    if (remaining.isEmpty()) {
-                        break;
-                    }
-                }
+        for (int index = 0; index < outputs.size(); index++) {
+            ItemStack output = outputs.get(index);
+            int slot = ClayWorkTableOperations.FIRST_OUTPUT_SLOT + index;
+            ItemStack existing = this.table.getItem(slot);
+            if (existing.isEmpty()) {
+                this.table.setItem(slot, output.copy());
+            } else {
+                existing.grow(output.getCount());
+                this.table.setChanged();
             }
         }
     }

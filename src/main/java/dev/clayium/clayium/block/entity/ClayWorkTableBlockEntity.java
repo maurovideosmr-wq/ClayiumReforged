@@ -24,9 +24,12 @@ import org.jetbrains.annotations.Nullable;
 
 public class ClayWorkTableBlockEntity extends BlockEntity implements Container, MenuProvider {
     private static final Component TITLE = Component.translatable("container.clayium.clay_work_table");
+    private static final String TAG_COOK_TIME = "CookTime";
+    private static final String TAG_TIME_TO_COOK = "TimeToCook";
+    private static final String TAG_COOKING_METHOD = "CookingMethod";
 
     private final NonNullList<ItemStack> items = NonNullList.withSize(ClayWorkTableOperations.SLOT_COUNT, ItemStack.EMPTY);
-    private final ContainerData data = new SimpleContainerData(2);
+    private final ContainerData data = new SimpleContainerData(ClayWorkTableMenu.DATA_COUNT);
 
     public ClayWorkTableBlockEntity(BlockPos pos, BlockState blockState) {
         super(ClayiumBlockEntities.CLAY_WORK_TABLE.get(), pos, blockState);
@@ -36,11 +39,17 @@ public class ClayWorkTableBlockEntity extends BlockEntity implements Container, 
     protected void loadAdditional(ValueInput input) {
         super.loadAdditional(input);
         ContainerHelper.loadAllItems(input, this.items);
+        this.data.set(0, input.getIntOr(TAG_COOK_TIME, 0));
+        this.data.set(1, input.getIntOr(TAG_TIME_TO_COOK, 0));
+        this.data.set(2, input.getIntOr(TAG_COOKING_METHOD, 0));
     }
 
     @Override
     protected void saveAdditional(ValueOutput output) {
         ContainerHelper.saveAllItems(output, this.items);
+        output.putInt(TAG_COOK_TIME, this.data.get(0));
+        output.putInt(TAG_TIME_TO_COOK, this.data.get(1));
+        output.putInt(TAG_COOKING_METHOD, this.data.get(2));
         super.saveAdditional(output);
     }
 
@@ -106,6 +115,9 @@ public class ClayWorkTableBlockEntity extends BlockEntity implements Container, 
     @Override
     public void clearContent() {
         this.items.clear();
+        this.data.set(0, 0);
+        this.data.set(1, 0);
+        this.data.set(2, 0);
         this.setChanged();
     }
 }
