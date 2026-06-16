@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "clayium:dense_clay"
+  ],
+  "result": {
+    "id": "minecraft:clay",
+    "count": 9
+  }
+}

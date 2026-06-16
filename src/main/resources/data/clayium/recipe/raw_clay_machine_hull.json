@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "###",
+    "#G#",
+    "###"
+  ],
+  "key": {
+    "#": "clayium:clay_large_plate",
+    "G": "clayium:clay_gear"
+  },
+  "result": {
+    "id": "clayium:raw_clay_machine_hull"
+  }
+}

@@ -1,0 +1,82 @@
+/*
+ * Decompiled with CFR 0.152.
+ * 
+ * Could not load the following classes:
+ *  net.minecraftforge.common.util.ForgeDirection
+ *  net.minecraftforge.fluids.Fluid
+ *  net.minecraftforge.fluids.FluidStack
+ *  net.minecraftforge.fluids.FluidTankInfo
+ *  net.minecraftforge.fluids.IFluidHandler
+ */
+package mods.clayium.block.tile;
+
+import mods.clayium.block.tile.TileClayBuffer;
+import mods.clayium.util.UtilDirection;
+import mods.clayium.util.UtilTransfer;
+import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.FluidTankInfo;
+import net.minecraftforge.fluids.IFluidHandler;
+
+public class TileFluidTranslator
+extends TileClayBuffer
+implements IFluidHandler {
+    @Override
+    public void initParamsByTier(int tier) {
+        super.initParamsByTier(tier);
+        this.listSlotsInsert.add(this.slotsDrop);
+        this.listSlotsExtract.add(this.slotsDrop);
+    }
+
+    @Override
+    public void doAutoExtractFromSide(int side, int front) {
+        int route = this.insertRoutes[side];
+        if (route == 0) {
+            UtilTransfer.extractFromTank(this, (int[])this.listSlotsInsert.get(route), UtilDirection.getOrientation(front), UtilDirection.getSide(side), this.maxAutoExtract != null && route < this.maxAutoExtract.length && this.maxAutoExtract[route] >= 0 ? this.maxAutoExtract[route] : this.maxAutoExtractDefault);
+        } else {
+            super.doAutoExtractFromSide(side, front);
+        }
+    }
+
+    @Override
+    public void doAutoInsertToSide(int side, int front) {
+        int route = this.extractRoutes[side];
+        if (route == 0) {
+            UtilTransfer.insertToTank(this, (int[])this.listSlotsExtract.get(route), UtilDirection.getOrientation(front), UtilDirection.getSide(side), this.maxAutoInsert != null && route < this.maxAutoInsert.length && this.maxAutoInsert[route] >= 0 ? this.maxAutoInsert[route] : this.maxAutoInsertDefault);
+        } else {
+            super.doAutoInsertToSide(side, front);
+        }
+    }
+
+    @Override
+    public void doAutoExtract() {
+        super.doAutoExtract();
+        UtilTransfer.sortFluid(this.containerItemStacks, (int[])this.listSlotsInsert.get(0));
+    }
+
+    public int fill(ForgeDirection from, FluidStack resource, boolean doFill) {
+        return UtilTransfer.fillFluid(this.containerItemStacks, (int[])this.listSlotsInsert.get(0), resource, doFill);
+    }
+
+    public FluidStack drain(ForgeDirection from, FluidStack resource, boolean doDrain) {
+        return UtilTransfer.drainFluid(this.containerItemStacks, (int[])this.listSlotsInsert.get(0), resource, doDrain);
+    }
+
+    public FluidStack drain(ForgeDirection from, int maxDrain, boolean doDrain) {
+        return UtilTransfer.drainFluid(this.containerItemStacks, (int[])this.listSlotsInsert.get(0), maxDrain, doDrain);
+    }
+
+    public boolean canFill(ForgeDirection from, Fluid fluid) {
+        return UtilTransfer.canFillFluid(this.containerItemStacks, (int[])this.listSlotsInsert.get(0), fluid);
+    }
+
+    public boolean canDrain(ForgeDirection from, Fluid fluid) {
+        return UtilTransfer.canDrainFluid(this.containerItemStacks, (int[])this.listSlotsInsert.get(0), fluid);
+    }
+
+    public FluidTankInfo[] getTankInfo(ForgeDirection from) {
+        return UtilTransfer.getTankInfo(this.containerItemStacks, (int[])this.listSlotsInsert.get(0));
+    }
+}
+

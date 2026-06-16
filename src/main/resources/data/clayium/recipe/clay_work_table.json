@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "##",
+    "##"
+  ],
+  "key": {
+    "#": "clayium:dense_clay"
+  },
+  "result": {
+    "id": "clayium:clay_work_table"
+  }
+}

@@ -1,0 +1,106 @@
+/*
+ * Decompiled with CFR 0.152.
+ * 
+ * Could not load the following classes:
+ *  net.minecraft.item.ItemStack
+ */
+package mods.clayium.block.tile;
+
+import mods.clayium.block.tile.INormalInventory;
+import mods.clayium.block.tile.TileCAMachines;
+import mods.clayium.core.ClayiumCore;
+import mods.clayium.item.CMaterials;
+import mods.clayium.util.UtilTransfer;
+import net.minecraft.item.ItemStack;
+
+public class TileCACollector
+extends TileCAMachines
+implements INormalInventory {
+    public int inventoryX = 0;
+    public int inventoryY = 0;
+    public long baseCraftTime = 10000L;
+
+    @Override
+    public void initParams() {
+        super.initParams();
+        this.insertRoutes = new int[]{-1, -1, -1, -1, -1, -1};
+        this.extractRoutes = new int[]{-1, -1, 0, -1, -1, -1};
+        this.autoInsert = true;
+        this.autoExtract = true;
+        this.containerItemStacks = new ItemStack[36];
+        this.listSlotsInsert.clear();
+        this.clayEnergySlot = -1;
+        this.maxAutoExtractDefault = 64;
+        this.maxAutoInsertDefault = 64;
+        this.autoInsertInterval = 1;
+        this.autoExtractInterval = 1;
+        this.recipeId = "";
+        this.machineTimeToCraft = this.baseCraftTime;
+    }
+
+    @Override
+    public void initParamsByTier(int tier) {
+        switch (tier) {
+            default: 
+        }
+        this.inventoryY = 3;
+        this.inventoryX = 3;
+        int slotNum = this.inventoryX * this.inventoryY;
+        int[] slots = new int[slotNum];
+        int[] slots2 = new int[slotNum];
+        for (int i = 0; i < slots.length; ++i) {
+            slots[i] = i;
+            slots2[i] = slots.length - i - 1;
+        }
+        this.listSlotsExtract.clear();
+        this.listSlotsExtract.add(slots2);
+        this.slotsDrop = slots;
+    }
+
+    @Override
+    public boolean canProceedCraft() {
+        return true;
+    }
+
+    @Override
+    public void proceedCraft() {
+        this.machineTimeToCraft = (long)((float)this.baseCraftTime * this.multCraftTime);
+        this.machineCraftTime = (long)((double)this.machineCraftTime + ClayiumCore.multiplyProgressionRateD(this.getResonance() - 1.0));
+        this.isDoingWork = true;
+        int slotNum = this.inventoryX * this.inventoryY;
+        this.machineCraftTime = Math.min(this.machineCraftTime, this.machineTimeToCraft * (long)slotNum * (long)this.func_70297_j_());
+        boolean res = true;
+        while (this.machineCraftTime >= this.machineTimeToCraft && res) {
+            int n = Math.min((int)(this.machineCraftTime / this.machineTimeToCraft), 64);
+            this.machineCraftTime -= (long)n * this.machineTimeToCraft;
+            res = UtilTransfer.produceItemStack(CMaterials.get(CMaterials.ANTIMATTER, CMaterials.GEM, n), this.containerItemStacks, 0, slotNum, this.func_70297_j_()) == null;
+        }
+        if (this.externalControlState > 0) {
+            --this.externalControlState;
+            if (this.externalControlState == 0) {
+                this.externalControlState = -1;
+            }
+        }
+    }
+
+    @Override
+    public int getInventoryX() {
+        return this.inventoryX;
+    }
+
+    @Override
+    public int getInventoryY() {
+        return this.inventoryY;
+    }
+
+    @Override
+    public int getInventoryStart() {
+        return 0;
+    }
+
+    @Override
+    public int getInventoryP() {
+        return 1;
+    }
+}
+

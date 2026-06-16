@@ -1,0 +1,12 @@
+.gradle/
+build/
+out/
+run/
+runs/
+src/generated/resources/.cache/
+*.log
+*.class
+*.jar
+!gradle/wrapper/gradle-wrapper.jar
+.idea/
+*.iml

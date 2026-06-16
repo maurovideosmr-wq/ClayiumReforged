@@ -1,0 +1,28 @@
+/*
+ * Decompiled with CFR 0.152.
+ * 
+ * Could not load the following classes:
+ *  net.minecraftforge.oredict.OreDictionary
+ */
+package mods.clayium.util.crafting;
+
+import net.minecraftforge.oredict.OreDictionary;
+
+public class OreDictionaryStack {
+    public int id;
+    public int stackSize;
+
+    public OreDictionaryStack(int id, int stackSize) {
+        this.id = id;
+        this.stackSize = stackSize;
+    }
+
+    public OreDictionaryStack(String oreName, int stackSize) {
+        this(OreDictionary.getOreID((String)oreName), stackSize);
+    }
+
+    public String getOreName() {
+        return OreDictionary.getOreName((int)this.id);
+    }
+}
+
