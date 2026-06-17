@@ -224,6 +224,29 @@ public final class ClayiumGameTests {
         assertStack(helper, toolBreaksOnFinalClick.table.getItem(ClayWorkTableOperations.FIRST_OUTPUT_SLOT + 1), Items.CLAY_BALL, 2, "breaking final tool use should still craft byproduct");
         helper.assertValueEqual(toolBreaksOnFinalClick.menu.getCookingMethod(), 0, "breaking final tool use should complete recipe");
 
+        MenuFixture toolTooDamagedForMultiClick = menuFixture(helper);
+        ItemStack weakRollingPin = new ItemStack(ClayiumItems.CLAY_ROLLING_PIN.get());
+        weakRollingPin.setDamageValue(weakRollingPin.getMaxDamage() - 2);
+        toolTooDamagedForMultiClick.table.setItem(ClayWorkTableOperations.INPUT_SLOT, new ItemStack(ClayiumItems.CLAY_LARGE_BALL.get()));
+        toolTooDamagedForMultiClick.table.setItem(ClayWorkTableOperations.TOOL_SLOT, weakRollingPin);
+        helper.assertFalse(toolTooDamagedForMultiClick.menu.canProcessButton(3), "tool that would break before completion should not start multi-click work");
+        toolTooDamagedForMultiClick.menu.clickMenuButton(toolTooDamagedForMultiClick.player, 3);
+        helper.assertValueEqual(toolTooDamagedForMultiClick.menu.getCookingMethod(), 0, "insufficient tool durability should not reserve work");
+        assertStack(helper, toolTooDamagedForMultiClick.table.getItem(ClayWorkTableOperations.INPUT_SLOT), ClayiumItems.CLAY_LARGE_BALL.get(), 1, "insufficient tool durability should keep input");
+        assertStack(helper, toolTooDamagedForMultiClick.table.getItem(ClayWorkTableOperations.INTERNAL_INPUT_SLOT), Items.AIR, 0, "insufficient tool durability should keep hidden input empty");
+        helper.assertValueEqual(toolTooDamagedForMultiClick.table.getItem(ClayWorkTableOperations.TOOL_SLOT).getDamageValue(), weakRollingPin.getMaxDamage() - 2, "insufficient tool durability should not damage tool");
+
+        MenuFixture toolBreaksOnMultiClickCompletion = menuFixture(helper);
+        ItemStack exactlyEnoughRollingPin = new ItemStack(ClayiumItems.CLAY_ROLLING_PIN.get());
+        exactlyEnoughRollingPin.setDamageValue(exactlyEnoughRollingPin.getMaxDamage() - 3);
+        toolBreaksOnMultiClickCompletion.table.setItem(ClayWorkTableOperations.INPUT_SLOT, new ItemStack(ClayiumItems.CLAY_LARGE_BALL.get()));
+        toolBreaksOnMultiClickCompletion.table.setItem(ClayWorkTableOperations.TOOL_SLOT, exactlyEnoughRollingPin);
+        click(toolBreaksOnMultiClickCompletion, 3, 4);
+        assertStack(helper, toolBreaksOnMultiClickCompletion.table.getItem(ClayWorkTableOperations.TOOL_SLOT), Items.CLAY_BALL, 4, "exactly enough rolling pin should break on completion");
+        assertStack(helper, toolBreaksOnMultiClickCompletion.table.getItem(ClayWorkTableOperations.FIRST_OUTPUT_SLOT), ClayiumItems.CLAY_DISC.get(), 1, "multi-click final break should craft main output");
+        assertStack(helper, toolBreaksOnMultiClickCompletion.table.getItem(ClayWorkTableOperations.FIRST_OUTPUT_SLOT + 1), Items.CLAY_BALL, 2, "multi-click final break should craft byproduct");
+        helper.assertValueEqual(toolBreaksOnMultiClickCompletion.menu.getCookingMethod(), 0, "multi-click final break should complete recipe");
+
         MenuFixture differentActionWhileWorking = menuFixture(helper);
         differentActionWhileWorking.table.setItem(ClayWorkTableOperations.INPUT_SLOT, new ItemStack(Items.CLAY_BALL));
         differentActionWhileWorking.menu.clickMenuButton(differentActionWhileWorking.player, 1);
@@ -268,6 +291,16 @@ public final class ClayiumGameTests {
         assertCraftingRecipe(helper, "clay_large_plate", ClayiumItems.CLAY_LARGE_PLATE.get(), 1);
         assertCraftingRecipe(helper, "clay_gear", ClayiumItems.CLAY_GEAR.get(), 1);
         assertCraftingRecipe(helper, "dense_clay_gear", ClayiumItems.DENSE_CLAY_GEAR.get(), 1);
+        assertCraftingRecipe(helper, "clay_cutting_head", ClayiumItems.CLAY_CUTTING_HEAD.get(), 1);
+        assertCraftingRecipe(helper, "dense_clay_cutting_head", ClayiumItems.DENSE_CLAY_CUTTING_HEAD.get(), 1);
+        assertCraftingRecipe(helper, "clay_bearing", ClayiumItems.CLAY_BEARING.get(), 1);
+        assertCraftingRecipe(helper, "dense_clay_bearing", ClayiumItems.DENSE_CLAY_BEARING.get(), 1);
+        assertCraftingRecipe(helper, "clay_spindle", ClayiumItems.CLAY_SPINDLE.get(), 1);
+        assertCraftingRecipe(helper, "dense_clay_spindle", ClayiumItems.DENSE_CLAY_SPINDLE.get(), 1);
+        assertCraftingRecipe(helper, "clay_grinding_head", ClayiumItems.CLAY_GRINDING_HEAD.get(), 1);
+        assertCraftingRecipe(helper, "dense_clay_grinding_head", ClayiumItems.DENSE_CLAY_GRINDING_HEAD.get(), 1);
+        assertCraftingRecipe(helper, "clay_water_wheel", ClayiumItems.CLAY_WATER_WHEEL.get(), 1);
+        assertCraftingRecipe(helper, "dense_clay_water_wheel", ClayiumItems.DENSE_CLAY_WATER_WHEEL.get(), 1);
         assertCraftingRecipe(helper, "clay_pipe_from_plate", ClayiumItems.CLAY_PIPE.get(), 1);
         assertCraftingRecipe(helper, "clay_ring_from_cylinder", ClayiumItems.CLAY_RING.get(), 1);
         assertCraftingRecipe(helper, "clay_short_stick_from_small_ring", ClayiumItems.CLAY_SHORT_STICK.get(), 1);

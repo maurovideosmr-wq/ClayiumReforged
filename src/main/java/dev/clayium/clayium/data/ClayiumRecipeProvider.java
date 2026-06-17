@@ -63,8 +63,34 @@ public final class ClayiumRecipeProvider extends RecipeProvider {
                 .define('#', ClayiumItems.CLAY_PLATE.get())
                 .unlockedBy("has_clay_plate", this.has(ClayiumItems.CLAY_PLATE.get()))
                 .save(this.output, recipeId("clay_large_plate"));
-        this.gearRecipe("clay_gear", ClayiumItems.CLAY_GEAR.get(), ClayiumItems.CLAY_SHORT_STICK.get(), ClayiumItems.CLAY_SMALL_RING.get());
-        this.gearRecipe("dense_clay_gear", ClayiumItems.DENSE_CLAY_GEAR.get(), ClayiumItems.DENSE_CLAY_SHORT_STICK.get(), ClayiumItems.DENSE_CLAY_SMALL_RING.get());
+        this.ringedPartRecipe("clay_gear", ClayiumItems.CLAY_GEAR.get(), ClayiumItems.CLAY_SHORT_STICK.get(), ClayiumItems.CLAY_SMALL_RING.get());
+        this.ringedPartRecipe("dense_clay_gear", ClayiumItems.DENSE_CLAY_GEAR.get(), ClayiumItems.DENSE_CLAY_SHORT_STICK.get(), ClayiumItems.DENSE_CLAY_SMALL_RING.get());
+        this.ringedPartRecipe("clay_cutting_head", ClayiumItems.CLAY_CUTTING_HEAD.get(), ClayiumItems.CLAY_BLADE.get(), ClayiumItems.CLAY_RING.get());
+        this.ringedPartRecipe("dense_clay_cutting_head", ClayiumItems.DENSE_CLAY_CUTTING_HEAD.get(), ClayiumItems.DENSE_CLAY_BLADE.get(), ClayiumItems.DENSE_CLAY_RING.get());
+        this.ringedPartRecipe("clay_bearing", ClayiumItems.CLAY_BEARING.get(), Items.CLAY_BALL, ClayiumItems.CLAY_RING.get());
+        this.ringedPartRecipe("dense_clay_bearing", ClayiumItems.DENSE_CLAY_BEARING.get(), Items.CLAY_BALL, ClayiumItems.DENSE_CLAY_RING.get());
+        this.spindleRecipe(
+                "clay_spindle",
+                ClayiumItems.CLAY_SPINDLE.get(),
+                ClayiumItems.CLAY_STICK.get(),
+                ClayiumItems.CLAY_BEARING.get(),
+                ClayiumItems.CLAY_RING.get(),
+                ClayiumItems.CLAY_PLATE.get(),
+                ClayiumItems.CLAY_SMALL_RING.get()
+        );
+        this.spindleRecipe(
+                "dense_clay_spindle",
+                ClayiumItems.DENSE_CLAY_SPINDLE.get(),
+                ClayiumItems.DENSE_CLAY_STICK.get(),
+                ClayiumItems.DENSE_CLAY_BEARING.get(),
+                ClayiumItems.DENSE_CLAY_RING.get(),
+                ClayiumItems.DENSE_CLAY_PLATE.get(),
+                ClayiumItems.DENSE_CLAY_SMALL_RING.get()
+        );
+        this.ringedPartRecipe("clay_grinding_head", ClayiumItems.CLAY_GRINDING_HEAD.get(), ClayiumItems.CLAY_NEEDLE.get(), ClayiumItems.CLAY_RING.get());
+        this.ringedPartRecipe("dense_clay_grinding_head", ClayiumItems.DENSE_CLAY_GRINDING_HEAD.get(), ClayiumItems.DENSE_CLAY_NEEDLE.get(), ClayiumItems.DENSE_CLAY_RING.get());
+        this.waterWheelRecipe("clay_water_wheel", ClayiumItems.CLAY_WATER_WHEEL.get(), ClayiumItems.CLAY_PLATE.get(), ClayiumItems.CLAY_RING.get());
+        this.waterWheelRecipe("dense_clay_water_wheel", ClayiumItems.DENSE_CLAY_WATER_WHEEL.get(), ClayiumItems.DENSE_CLAY_PLATE.get(), ClayiumItems.DENSE_CLAY_RING.get());
         this.oneToOneShapeless("clay_pipe_from_plate", ClayiumItems.CLAY_PIPE.get(), ClayiumItems.CLAY_PLATE.get());
         this.oneToOneShapeless("clay_ring_from_cylinder", ClayiumItems.CLAY_RING.get(), ClayiumItems.CLAY_CYLINDER.get());
         this.oneToOneShapeless("clay_short_stick_from_small_ring", ClayiumItems.CLAY_SHORT_STICK.get(), ClayiumItems.CLAY_SMALL_RING.get());
@@ -134,14 +160,39 @@ public final class ClayiumRecipeProvider extends RecipeProvider {
                 .save(this.output, recipeId("clay_wrench"));
     }
 
-    private void gearRecipe(String path, ItemLike result, ItemLike spoke, ItemLike ring) {
+    private void ringedPartRecipe(String path, ItemLike result, ItemLike outer, ItemLike center) {
         this.shaped(RecipeCategory.MISC, result)
                 .pattern("iii")
                 .pattern("ioi")
                 .pattern("iii")
-                .define('i', spoke)
+                .define('i', outer)
+                .define('o', center)
+                .unlockedBy("has_" + path, this.has(outer))
+                .save(this.output, recipeId(path));
+    }
+
+    private void spindleRecipe(String path, ItemLike result, ItemLike stick, ItemLike bearing, ItemLike ring, ItemLike plate, ItemLike smallRing) {
+        this.shaped(RecipeCategory.MISC, result)
+                .pattern("0#0")
+                .pattern("ioO")
+                .pattern("0#0")
+                .define('i', stick)
+                .define('o', bearing)
+                .define('O', ring)
+                .define('#', plate)
+                .define('0', smallRing)
+                .unlockedBy("has_" + path, this.has(bearing))
+                .save(this.output, recipeId(path));
+    }
+
+    private void waterWheelRecipe(String path, ItemLike result, ItemLike plate, ItemLike ring) {
+        this.shaped(RecipeCategory.MISC, result)
+                .pattern("###")
+                .pattern("#o#")
+                .pattern("###")
+                .define('#', plate)
                 .define('o', ring)
-                .unlockedBy("has_" + path, this.has(spoke))
+                .unlockedBy("has_" + path, this.has(plate))
                 .save(this.output, recipeId(path));
     }
 

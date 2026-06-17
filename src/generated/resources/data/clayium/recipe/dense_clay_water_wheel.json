@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "#": "clayium:dense_clay_plate",
+    "o": "clayium:dense_clay_ring"
+  },
+  "pattern": [
+    "###",
+    "#o#",
+    "###"
+  ],
+  "result": {
+    "id": "clayium:dense_clay_water_wheel"
+  }
+}

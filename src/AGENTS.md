@@ -38,6 +38,7 @@
 - Keep Clay Work Table visible slots aligned to the Figma/legacy layout: input at 17,30, tool at 80,17, main output at 143,30, and byproduct output at 143,55.
 - Keep Clay Work Table processing server-authoritative: action buttons advance `cookTime` one press at a time, progress is `cookTime / timeToCook`, output slots are fixed-position locked, and button yellow state is hover-only.
 - While Clay Work Table has a hidden in-progress input, lock processing to the original button id. Other buttons must stay unavailable and must not clear progress, consume visible input, or replace the reserved hidden input.
+- For tool-assisted Clay Work Table recipes, validate that the current durable tool can cover every remaining accepted press before starting or continuing work. A tool may break on the same press that completes the recipe, but not on an earlier press that would leave hidden input stuck.
 - Keep Clay Work Table runtime processing data-driven through the `clayium:clay_work_table` recipe type. `ClayWorkTableOperations` is only the default legacy recipe seed for datagen and tests; do not use it as a second runtime recipe list.
 - Store Clay Work Table recipe outputs as `ItemStackTemplate` and only create runtime `ItemStack`s in menu/JEI execution paths after registries and item components are bound.
 - Draw Clay Work Table slot frames as inset/recessed controls: dark top/left edge, light bottom/right edge.

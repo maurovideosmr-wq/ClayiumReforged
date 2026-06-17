@@ -112,6 +112,7 @@ These boxes mean the old source domain has been surveyed for the initial Phase 1
 - [x] Early crafting/smelting loop (`Done`, Phase 1): dense clay, Work Table, raw/baked tools, raw hull, clay machine hull.
 - [x] `registerToolRecipes` early clay tools (`Partial`, Phase 2): `clay_shovel`, `clay_pickaxe`, and `clay_wrench` vanilla recipes generated; piping tools, filters, shooters, capsules, and gadgets pending.
 - [x] `registerMainMaterialRecipes` early compressed clay progression (`Partial`, Phase 2): compressed clay, industrial clay, and advanced industrial clay compression/decompression recipes generated; higher material progression pending.
+- [x] `registerMainMaterialRecipes` Clay/Dense Clay non-machine part recipes (`Done`, Phase 2 hotfix): generated vanilla crafting recipes for gear, cutting head, bearing, spindle, grinding head, and water wheel; Dense Clay bearing keeps the old Dense Clay ball alias as `minecraft:clay_ball`.
 - [x] `registerHullRecipes` early tier ids (`Registered-only`, Phase 2): dense/simple/basic hulls registered and generated without temporary recipes; real tiered hull recipe chain pending machine production.
 - [ ] `registerMachineRecipes` (`Planned`, Phase 3/4/6/7/8): machine blocks need shared machine registry/runtime first.
 - [ ] `registerMaterialRecipes` (`Planned`, Phase 5/6): bulk material processing pending.

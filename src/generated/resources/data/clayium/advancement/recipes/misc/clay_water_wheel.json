@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_clay_water_wheel": {
+      "conditions": {
+        "items": [
+          {
+            "items": "clayium:clay_plate"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "clayium:clay_water_wheel"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_clay_water_wheel"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "clayium:clay_water_wheel"
+    ]
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "i": "minecraft:clay_ball",
+    "o": "clayium:dense_clay_ring"
+  },
+  "pattern": [
+    "iii",
+    "ioi",
+    "iii"
+  ],
+  "result": {
+    "id": "clayium:dense_clay_bearing"
+  }
+}

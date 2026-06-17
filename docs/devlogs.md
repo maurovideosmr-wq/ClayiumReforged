@@ -188,3 +188,21 @@
 - Verification state: `.\gradlew compileJava --no-watch-fs --stacktrace --console=plain` passed; `.\gradlew runData --no-watch-fs --stacktrace --console=plain` passed and wrote only the generated lang update, with the known Windows log-file lock warnings; `.\gradlew test --no-watch-fs --stacktrace --console=plain` passed; the first `.\gradlew clean build --no-watch-fs --stacktrace --console=plain` hit the known Windows lock on `build/moddev/artifacts/minecraft-patched-26.1.2.76.jar`, then `.\gradlew --stop --no-watch-fs --console=plain` released daemons and the repeated `clean build` passed; after the final tooltip `super` preservation pass, `.\gradlew compileJava test --no-watch-fs --stacktrace --console=plain`, `.\gradlew --stop --no-watch-fs --console=plain`, repeated `.\gradlew clean build --no-watch-fs --stacktrace --console=plain`, and `git diff --check` passed.
 - Unresolved TODOs: none known for the current catalog slice; future machine/item rows must add tier metadata when they enter the catalog.
 - Next commands: review and commit the hotfix when accepted.
+
+## 2026-06-17 Non-Machine Recipe and Lang Hotfix
+
+- Current goal: fix missing catalog block item names and port the remaining early non-machine Clay/Dense Clay material crafting recipes from old `registerMainMaterialRecipes`.
+- Changed files: `src/main/java/dev/clayium/clayium/data/ClayiumLanguageProvider.java`, `src/main/java/dev/clayium/clayium/data/ClayiumRecipeProvider.java`, `src/main/java/dev/clayium/clayium/gametest/ClayiumGameTests.java`, `src/generated/resources/assets/clayium/lang/en_us.json`, new generated recipe/advancement JSON under `src/generated/resources/data/clayium`, `docs/legacy-port-ledger.md`, and `docs/devlogs.md`.
+- Key decisions: generate `item.clayium.*` language keys for every catalog block item from the same catalog row as the `block.clayium.*` key; add shared recipe helpers for ringed parts, spindles, and water wheels; keep Dense Clay bearing's old Dense Clay ball input as `minecraft:clay_ball`; keep registered-only hull and circuit items without temporary survival recipes.
+- Verification state: `.\gradlew runData --stacktrace --no-watch-fs --console=plain` passed and wrote 21 generated files; `.\gradlew test --stacktrace --no-watch-fs --console=plain` passed; `.\gradlew clean build --stacktrace --no-watch-fs --console=plain` passed; `.\gradlew runGameTestServer --stacktrace --no-watch-fs --console=plain` passed and logs showed all 109 required tests passed; `git diff --check` passed with LF/CRLF working-copy warnings only. Jade and LDLib still emit their known local-runtime log noise during GameTest startup, unrelated to Clayium assertions.
+- Unresolved TODOs: none for this hotfix.
+- Next commands: continue with Phase 3 machine framework work or the next reported gameplay issue.
+
+## 2026-06-17 Work Table Tool Durability Guard
+
+- Current goal: prevent Clay Work Table tool-assisted recipes from getting stuck when a rolling pin, slicer, or spatula would break before the current multi-click recipe completes.
+- Changed files: `src/main/java/dev/clayium/clayium/menu/ClayWorkTableMenu.java`, `src/main/java/dev/clayium/clayium/gametest/ClayiumGameTests.java`, `src/AGENTS.md`, and `docs/devlogs.md`.
+- Key decisions: keep the legacy one-durability-per-valid-press behavior, but require durable tools to have enough remaining Work Table uses for all remaining presses before work starts or continues. A tool that has exactly enough uses can still break on the completing press and produce its clay-ball remainder; a tool that would break earlier leaves the input untouched and the hidden slot empty.
+- Verification state: `.\gradlew test --stacktrace --no-watch-fs --console=plain` passed; `.\gradlew runGameTestServer --stacktrace --no-watch-fs --console=plain` passed and logs showed all 109 required tests passed; `.\gradlew clean build --stacktrace --no-watch-fs --console=plain` passed; `git diff --check` passed with LF/CRLF working-copy warnings only. Jade and LDLib still emit their known local-runtime log noise during GameTest startup, unrelated to Clayium assertions.
+- Unresolved TODOs: none for this hotfix.
+- Next commands: continue with Phase 3 machine framework work or the next reported gameplay issue.

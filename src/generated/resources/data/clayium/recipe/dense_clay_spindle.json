@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "#": "clayium:dense_clay_plate",
+    "0": "clayium:dense_clay_small_ring",
+    "O": "clayium:dense_clay_ring",
+    "i": "clayium:dense_clay_stick",
+    "o": "clayium:dense_clay_bearing"
+  },
+  "pattern": [
+    "0#0",
+    "ioO",
+    "0#0"
+  ],
+  "result": {
+    "id": "clayium:dense_clay_spindle"
+  }
+}

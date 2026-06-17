@@ -36,6 +36,7 @@ public final class ClayiumLanguageProvider extends LanguageProvider {
 
         for (ClayiumContentCatalog.BlockSpec spec : ClayiumContentCatalog.blocks()) {
             this.add("block.clayium." + spec.id(), spec.translation());
+            this.add("item.clayium." + spec.id(), spec.translation());
         }
         for (ClayiumContentCatalog.SimpleItemSpec spec : ClayiumContentCatalog.simpleItems()) {
             this.add("item.clayium." + spec.id(), spec.translation());

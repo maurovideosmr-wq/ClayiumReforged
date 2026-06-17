@@ -3,6 +3,7 @@ package dev.clayium.clayium.menu;
 import dev.clayium.clayium.recipe.ClayWorkTableAction;
 import dev.clayium.clayium.recipe.ClayWorkTableRecipe;
 import dev.clayium.clayium.recipe.ClayWorkTableRecipeCache;
+import dev.clayium.clayium.recipe.ClayWorkTableToolRequirement;
 import dev.clayium.clayium.item.ClayCraftingToolItem;
 import dev.clayium.clayium.registry.ClayiumBlocks;
 import dev.clayium.clayium.registry.ClayiumMenus;
@@ -163,7 +164,10 @@ public class ClayWorkTableMenu extends AbstractContainerMenu {
             if (this.findProcessableRecipe(buttonId, ClayWorkTableOperations.INTERNAL_INPUT_SLOT).isPresent()) {
                 return 1;
             }
-            if (allowSyncedContinuationFallback && this.getTimeToCook() > 0 && ClayWorkTableOperations.canUseToolForButton(buttonId, this.table.getItem(ClayWorkTableOperations.TOOL_SLOT))) {
+            if (allowSyncedContinuationFallback
+                    && this.getTimeToCook() > 0
+                    && ClayWorkTableOperations.canUseToolForButton(buttonId, this.table.getItem(ClayWorkTableOperations.TOOL_SLOT))
+                    && this.hasEnoughToolUsesFor(buttonId, this.remainingClicks())) {
                 return 1;
             }
             return 0;
@@ -276,7 +280,43 @@ public class ClayWorkTableMenu extends AbstractContainerMenu {
         ItemStack input = this.table.getItem(inputSlot);
         ItemStack tool = this.table.getItem(ClayWorkTableOperations.TOOL_SLOT);
         return ClayWorkTableRecipeCache.findBest(this.level, ClayWorkTableAction.byButtonId(buttonId), input, tool)
-                .filter(holder -> this.canFitOutputs(holder.value().createOutputs()));
+                .filter(holder -> this.canFitOutputs(holder.value().createOutputs()))
+                .filter(holder -> this.hasEnoughToolUsesFor(buttonId, holder.value()));
+    }
+
+    private boolean hasEnoughToolUsesFor(int buttonId, ClayWorkTableRecipe recipe) {
+        if (recipe.toolRequirement() == ClayWorkTableToolRequirement.NONE) {
+            return true;
+        }
+        int requiredUses = this.getCookingMethod() == 0 ? recipe.workTicks() : this.remainingClicks();
+        return this.hasEnoughToolUsesFor(buttonId, requiredUses);
+    }
+
+    private boolean hasEnoughToolUsesFor(int buttonId, int requiredUses) {
+        if (buttonId < 3 || requiredUses <= 0) {
+            return true;
+        }
+        ItemStack tool = this.table.getItem(ClayWorkTableOperations.TOOL_SLOT);
+        if (!(tool.getItem() instanceof ClayCraftingToolItem)) {
+            return true;
+        }
+        return remainingWorkTableUses(tool) >= requiredUses;
+    }
+
+    private int remainingClicks() {
+        return Math.max(1, this.getTimeToCook() - this.getCookTime());
+    }
+
+    private static int remainingWorkTableUses(ItemStack tool) {
+        if (!tool.isDamageableItem()) {
+            return Integer.MAX_VALUE;
+        }
+        int maxDamage = tool.getMaxDamage();
+        int damage = tool.getDamageValue();
+        if (damage > maxDamage) {
+            return 0;
+        }
+        return maxDamage - damage + 1;
     }
 
     private boolean canFitOutputs(List<ItemStack> outputs) {

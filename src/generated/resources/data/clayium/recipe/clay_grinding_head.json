@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "i": "clayium:clay_needle",
+    "o": "clayium:clay_ring"
+  },
+  "pattern": [
+    "iii",
+    "ioi",
+    "iii"
+  ],
+  "result": {
+    "id": "clayium:clay_grinding_head"
+  }
+}
