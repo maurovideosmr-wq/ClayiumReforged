@@ -206,3 +206,12 @@
 - Verification state: `.\gradlew test --stacktrace --no-watch-fs --console=plain` passed; `.\gradlew runGameTestServer --stacktrace --no-watch-fs --console=plain` passed and logs showed all 109 required tests passed; `.\gradlew clean build --stacktrace --no-watch-fs --console=plain` passed; `git diff --check` passed with LF/CRLF working-copy warnings only. Jade and LDLib still emit their known local-runtime log noise during GameTest startup, unrelated to Clayium assertions.
 - Unresolved TODOs: none for this hotfix.
 - Next commands: continue with Phase 3 machine framework work or the next reported gameplay issue.
+
+## 2026-06-17 Work Table Max-Damage Tool Fix
+
+- Current goal: fix Clay Work Table tools that visually reset to `Durability: 0 / max` instead of becoming clay balls when they reached the modern max-damage boundary.
+- Changed files: `src/main/java/dev/clayium/clayium/item/ClayCraftingToolItem.java`, `src/main/java/dev/clayium/clayium/menu/ClayWorkTableMenu.java`, `src/main/java/dev/clayium/clayium/gametest/ClayiumGameTests.java`, `src/AGENTS.md`, and `docs/devlogs.md`.
+- Key decisions: treat the press that would reach `maxDamage` as the breaking press in 26.x, returning the configured clay-ball remainder immediately instead of creating an item stack with damage equal to max damage. Work Table remaining-use checks now use `maxDamage - currentDamage`, matching that modern boundary.
+- Verification state: `.\gradlew test --stacktrace --no-watch-fs --console=plain` passed; `.\gradlew runGameTestServer --stacktrace --no-watch-fs --console=plain` passed and logs showed all 109 required tests passed; `.\gradlew clean build --stacktrace --no-watch-fs --console=plain` passed; `git diff --check` passed with LF/CRLF working-copy warnings only.
+- Unresolved TODOs: none for this hotfix.
+- Next commands: commit/push if accepted, then continue with Phase 3 machine framework work or the next reported gameplay issue.

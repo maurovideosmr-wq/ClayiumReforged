@@ -215,7 +215,7 @@ public final class ClayiumGameTests {
 
         MenuFixture toolBreaksOnFinalClick = menuFixture(helper);
         ItemStack exhaustedRollingPin = new ItemStack(ClayiumItems.CLAY_ROLLING_PIN.get());
-        exhaustedRollingPin.setDamageValue(exhaustedRollingPin.getMaxDamage());
+        exhaustedRollingPin.setDamageValue(exhaustedRollingPin.getMaxDamage() - 1);
         toolBreaksOnFinalClick.table.setItem(ClayWorkTableOperations.INPUT_SLOT, new ItemStack(ClayiumItems.CLAY_PLATE.get()));
         toolBreaksOnFinalClick.table.setItem(ClayWorkTableOperations.TOOL_SLOT, exhaustedRollingPin);
         toolBreaksOnFinalClick.menu.clickMenuButton(toolBreaksOnFinalClick.player, 3);
@@ -226,7 +226,7 @@ public final class ClayiumGameTests {
 
         MenuFixture toolTooDamagedForMultiClick = menuFixture(helper);
         ItemStack weakRollingPin = new ItemStack(ClayiumItems.CLAY_ROLLING_PIN.get());
-        weakRollingPin.setDamageValue(weakRollingPin.getMaxDamage() - 2);
+        weakRollingPin.setDamageValue(weakRollingPin.getMaxDamage() - 3);
         toolTooDamagedForMultiClick.table.setItem(ClayWorkTableOperations.INPUT_SLOT, new ItemStack(ClayiumItems.CLAY_LARGE_BALL.get()));
         toolTooDamagedForMultiClick.table.setItem(ClayWorkTableOperations.TOOL_SLOT, weakRollingPin);
         helper.assertFalse(toolTooDamagedForMultiClick.menu.canProcessButton(3), "tool that would break before completion should not start multi-click work");
@@ -234,11 +234,11 @@ public final class ClayiumGameTests {
         helper.assertValueEqual(toolTooDamagedForMultiClick.menu.getCookingMethod(), 0, "insufficient tool durability should not reserve work");
         assertStack(helper, toolTooDamagedForMultiClick.table.getItem(ClayWorkTableOperations.INPUT_SLOT), ClayiumItems.CLAY_LARGE_BALL.get(), 1, "insufficient tool durability should keep input");
         assertStack(helper, toolTooDamagedForMultiClick.table.getItem(ClayWorkTableOperations.INTERNAL_INPUT_SLOT), Items.AIR, 0, "insufficient tool durability should keep hidden input empty");
-        helper.assertValueEqual(toolTooDamagedForMultiClick.table.getItem(ClayWorkTableOperations.TOOL_SLOT).getDamageValue(), weakRollingPin.getMaxDamage() - 2, "insufficient tool durability should not damage tool");
+        helper.assertValueEqual(toolTooDamagedForMultiClick.table.getItem(ClayWorkTableOperations.TOOL_SLOT).getDamageValue(), weakRollingPin.getMaxDamage() - 3, "insufficient tool durability should not damage tool");
 
         MenuFixture toolBreaksOnMultiClickCompletion = menuFixture(helper);
         ItemStack exactlyEnoughRollingPin = new ItemStack(ClayiumItems.CLAY_ROLLING_PIN.get());
-        exactlyEnoughRollingPin.setDamageValue(exactlyEnoughRollingPin.getMaxDamage() - 3);
+        exactlyEnoughRollingPin.setDamageValue(exactlyEnoughRollingPin.getMaxDamage() - 4);
         toolBreaksOnMultiClickCompletion.table.setItem(ClayWorkTableOperations.INPUT_SLOT, new ItemStack(ClayiumItems.CLAY_LARGE_BALL.get()));
         toolBreaksOnMultiClickCompletion.table.setItem(ClayWorkTableOperations.TOOL_SLOT, exactlyEnoughRollingPin);
         click(toolBreaksOnMultiClickCompletion, 3, 4);
@@ -530,9 +530,9 @@ public final class ClayiumGameTests {
         assertStack(helper, damaged, stack.getItem(), 1, name + " first use keeps tool");
         helper.assertValueEqual(damaged.getDamageValue(), 1, name + " first use damage");
 
-        ItemStack exhausted = new ItemStack(stack.getItem());
-        exhausted.setDamageValue(durability);
-        assertStack(helper, craftingTool.getAfterWorkTableUse(exhausted), Items.CLAY_BALL, brokenClayBallCount, name + " broken remainder");
+        ItemStack lastUse = new ItemStack(stack.getItem());
+        lastUse.setDamageValue(durability - 1);
+        assertStack(helper, craftingTool.getAfterWorkTableUse(lastUse), Items.CLAY_BALL, brokenClayBallCount, name + " last use broken remainder");
     }
 
     private static void assertDropped(GameTestHelper helper, List<ItemEntity> drops, Item expectedItem, int expectedCount, String name) {

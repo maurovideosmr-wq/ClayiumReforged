@@ -313,10 +313,10 @@ public class ClayWorkTableMenu extends AbstractContainerMenu {
         }
         int maxDamage = tool.getMaxDamage();
         int damage = tool.getDamageValue();
-        if (damage > maxDamage) {
+        if (damage >= maxDamage) {
             return 0;
         }
-        return maxDamage - damage + 1;
+        return maxDamage - damage;
     }
 
     private boolean canFitOutputs(List<ItemStack> outputs) {

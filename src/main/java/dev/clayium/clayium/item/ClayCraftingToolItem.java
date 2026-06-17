@@ -22,7 +22,7 @@ public final class ClayCraftingToolItem extends Item implements ClayiumTiered {
     }
 
     public ItemStack getAfterWorkTableUse(ItemStack stack) {
-        if (stack.getDamageValue() >= stack.getMaxDamage()) {
+        if (stack.getDamageValue() + 1 >= stack.getMaxDamage()) {
             return new ItemStack(Items.CLAY_BALL, this.brokenClayBallCount);
         }
         ItemStack damaged = stack.copyWithCount(1);
