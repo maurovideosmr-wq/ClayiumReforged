@@ -1,20 +1,22 @@
 package dev.clayium.clayium.registry;
 
 public enum MachineHullTier {
-    CLAY("clay_machine_hull", "Clay Machine Hull", "clay_machine_hull", ClayiumContentCatalog.ContentStatus.PORTED),
-    DENSE_CLAY("dense_clay_machine_hull", "Dense Clay Machine Hull", "dense_clay_machine_hull", ClayiumContentCatalog.ContentStatus.REGISTERED_ONLY),
-    SIMPLE("simple_machine_hull", "Simple Machine Hull", "simple_machine_hull", ClayiumContentCatalog.ContentStatus.REGISTERED_ONLY),
-    BASIC("basic_machine_hull", "Basic Machine Hull", "basic_machine_hull", ClayiumContentCatalog.ContentStatus.REGISTERED_ONLY);
+    CLAY("clay_machine_hull", "Clay Machine Hull", "clay_machine_hull", 1, ClayiumContentCatalog.ContentStatus.PORTED),
+    DENSE_CLAY("dense_clay_machine_hull", "Dense Clay Machine Hull", "dense_clay_machine_hull", 2, ClayiumContentCatalog.ContentStatus.REGISTERED_ONLY),
+    SIMPLE("simple_machine_hull", "Simple Machine Hull", "simple_machine_hull", 3, ClayiumContentCatalog.ContentStatus.REGISTERED_ONLY),
+    BASIC("basic_machine_hull", "Basic Machine Hull", "basic_machine_hull", 4, ClayiumContentCatalog.ContentStatus.REGISTERED_ONLY);
 
     private final String id;
     private final String translation;
     private final String texture;
+    private final int tier;
     private final ClayiumContentCatalog.ContentStatus status;
 
-    MachineHullTier(String id, String translation, String texture, ClayiumContentCatalog.ContentStatus status) {
+    MachineHullTier(String id, String translation, String texture, int tier, ClayiumContentCatalog.ContentStatus status) {
         this.id = id;
         this.translation = translation;
         this.texture = texture;
+        this.tier = tier;
         this.status = status;
     }
 
@@ -28,6 +30,10 @@ public enum MachineHullTier {
 
     public String texture() {
         return this.texture;
+    }
+
+    public int tier() {
+        return this.tier;
     }
 
     public ClayiumContentCatalog.ContentStatus status() {

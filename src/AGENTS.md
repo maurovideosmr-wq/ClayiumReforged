@@ -14,6 +14,7 @@
 - Treat `decompiled/` as read-only reference material. Do not copy old CFR Java packages into `main/java`.
 - Keep registry ids flat and explicit; do not reintroduce 1.7.10 metadata item or block ids.
 - Keep `ClayiumContentCatalog` as the source of truth for cataloged blocks, standalone items, material forms, content status, creative grouping, generated names, and generated model/resource metadata.
+- Keep legacy tier metadata in the catalog or the owning tier/material enum. Cataloged block items, simple items, tools, and material forms must expose their tier through the shared tier tooltip helpers instead of hard-coded per-item tooltip strings.
 - New cataloged items, blocks, material forms, and recipes must be added as catalog rows or recipe/datagen helpers first, then consumed by `ClayiumItems`, `ClayiumBlocks`, `PartRegistry`, datagen, JEI, and tests. Do not add new Phase 2+ registry entries directly in a one-off provider or static list.
 - Keep client-only classes under `dev.clayium.clayium.client` and register them through client-only entrypoints.
 - Keep source and data compatible with NeoForge 26.x / Minecraft 26.x only.

@@ -1,6 +1,8 @@
 package dev.clayium.clayium.registry;
 
 import dev.clayium.clayium.Clayium;
+import dev.clayium.clayium.item.ClayiumBlockItem;
+import dev.clayium.clayium.item.ClayiumTieredItem;
 import dev.clayium.clayium.item.ClayCraftingToolItem;
 import dev.clayium.clayium.item.ClayPickaxeItem;
 import dev.clayium.clayium.item.ClayShovelItem;
@@ -142,7 +144,10 @@ public final class ClayiumItems {
     private static Map<String, DeferredItem<BlockItem>> registerBlockItems() {
         Map<String, DeferredItem<BlockItem>> blockItems = new LinkedHashMap<>();
         for (ClayiumContentCatalog.BlockSpec spec : ClayiumContentCatalog.blocks()) {
-            DeferredItem<BlockItem> item = trackBlock(ITEMS.registerSimpleBlockItem(spec.id(), ClayiumBlocks.catalogBlock(spec.id())));
+            DeferredItem<BlockItem> item = trackBlock(ITEMS.<BlockItem>registerItem(
+                    spec.id(),
+                    properties -> new ClayiumBlockItem(ClayiumBlocks.catalogBlock(spec.id()).get(), properties, spec.tier())
+            ));
             blockItems.put(spec.id(), item);
         }
         return Collections.unmodifiableMap(blockItems);
@@ -160,15 +165,17 @@ public final class ClayiumItems {
 
     private static DeferredItem<Item> registerSimpleItem(ClayiumContentCatalog.SimpleItemSpec spec) {
         return switch (spec.kind()) {
-            case GENERIC -> ITEMS.registerSimpleItem(spec.id());
-            case RAW_CLAY_TOOL -> ITEMS.registerSimpleItem(spec.id());
+            case GENERIC, RAW_CLAY_TOOL -> ITEMS.<Item>registerItem(
+                    spec.id(),
+                    properties -> new ClayiumTieredItem(properties, spec.tier())
+            );
             case WORK_TABLE_TOOL -> ITEMS.<Item>registerItem(
                     spec.id(),
-                    properties -> new ClayCraftingToolItem(properties.durability(spec.durability()), spec.brokenClayBallCount())
+                    properties -> new ClayCraftingToolItem(properties.durability(spec.durability()), spec.brokenClayBallCount(), spec.tier())
             );
-            case CLAY_SHOVEL -> ITEMS.<Item>registerItem(spec.id(), ClayShovelItem::new);
-            case CLAY_PICKAXE -> ITEMS.<Item>registerItem(spec.id(), ClayPickaxeItem::new);
-            case CLAY_WRENCH -> ITEMS.<Item>registerItem(spec.id(), ClayWrenchItem::new);
+            case CLAY_SHOVEL -> ITEMS.<Item>registerItem(spec.id(), properties -> new ClayShovelItem(properties, spec.tier()));
+            case CLAY_PICKAXE -> ITEMS.<Item>registerItem(spec.id(), properties -> new ClayPickaxeItem(properties, spec.tier()));
+            case CLAY_WRENCH -> ITEMS.<Item>registerItem(spec.id(), properties -> new ClayWrenchItem(properties, spec.tier()));
         };
     }
 

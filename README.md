@@ -92,6 +92,7 @@ Completed in Phase 2:
   - compressed, industrial, and advanced industrial clay shards
 - Clay shovel, clay pickaxe, and clay wrench item ids with vanilla crafting recipes.
 - Phase 2 datagen for generated blockstates, 26.x item definitions, models, lang, loot tables, tags, and recipes.
+- Catalog-driven legacy tier tooltips for current block items, material forms, tools, circuits, shards, and machine hulls.
 - GameTest/JUnit coverage for the expanded registry surface, early material recipes, no temporary hull/circuit recipes, block drops, and harvest tags.
 
 Registered-only means the ids, resources, creative tab entries, loot/tags where applicable, and tests exist, but no temporary survival bridge recipe is added until the real machine production chain is migrated. Simple/basic hull and early circuit production are intentionally left for the next machine phase instead of being bridged with temporary recipes.

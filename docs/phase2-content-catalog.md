@@ -2,7 +2,7 @@
 
 Last updated: 2026-06-17
 
-Phase 2 introduces `ClayiumContentCatalog` as the source of truth for early material content. New cataloged content should be traceable from one row to registration, creative tab grouping, datagen, tags, recipes, tests, and the legacy ledger.
+Phase 2 introduces `ClayiumContentCatalog` as the source of truth for early material content. New cataloged content should be traceable from one row to registration, creative tab grouping, datagen, tags, recipes, tests, and the legacy ledger. Legacy tier metadata belongs in the catalog or the owning material/tier enum so item and block tooltips can be generated from data instead of per-item strings.
 
 ## Scope
 
@@ -23,6 +23,7 @@ Phase 2 introduces `ClayiumContentCatalog` as the source of truth for early mate
 - `id`: flattened registry id and resource id.
 - `translation`: generated English display name.
 - `texture`: texture basename under `assets/clayium/textures/block`.
+- `tier`: legacy tier tooltip value for the block item; compressed clay blocks follow old metadata tier values, while machine hulls derive this from `MachineHullTier`.
 - `kind`: block behavior family, such as compressed clay, Work Table, raw machine hull, or machine hull.
 - `harvestTool`: generated mineable tag and block drop requirement.
 - `status`: migration state for ledger and tests.
@@ -33,6 +34,7 @@ Phase 2 introduces `ClayiumContentCatalog` as the source of truth for early mate
 - `partType`: `ClayPartType` enum value.
 - `status`: `ITEM`, `BLOCK`, `EXTERNAL`, or `DEFERRED`.
 - `id`: generated registry/resource id for items and blocks, or external id for vanilla references.
+- `tier`: derived from `material.tier()` for generated tooltips.
 
 `SimpleItemSpec` rows define:
 
@@ -41,6 +43,7 @@ Phase 2 introduces `ClayiumContentCatalog` as the source of truth for early mate
 - `creativeCategory`: `TOOLS`, `PROGRESSION`, `PARTS`, or `BLOCKS`.
 - `modelKind`: generated item model family.
 - `kind`: item behavior family for registry factories and tags, such as raw clay tool, Work Table tool, Clay Shovel, Clay Pickaxe, or Clay Wrench.
+- `tier`: legacy tier tooltip value for the item; tool rows use the clay material tier and progression rows use old `itemMisc` tier values where available.
 - `durability`: max damage for durable simple tools; `0` for non-durable simple items.
 - `brokenClayBallCount`: clay balls returned when a baked Work Table crafting tool reaches its old break state; `0` for other simple items.
 - `status`: migration state for ledger and tests.
@@ -60,11 +63,12 @@ Phase 2 introduces `ClayiumContentCatalog` as the source of truth for early mate
 1. Add or update the `ClayMaterial`, `ClayPartType`, `MachineHullTier`, or future tier/type enum only when the legacy concept is actually entering scope.
 2. Add the catalog row in `ClayiumContentCatalog`.
 3. Add a common `ClayiumItems` or `ClayiumBlocks` alias only if code or recipes use it frequently.
-4. For tool items, choose or add a `SimpleItemKind` and wire behavior through `ClayiumItems`, `ClayiumTags`, and tag datagen.
-5. Extend datagen helpers instead of adding hand-written JSON.
-6. Copy only required legacy PNGs into `src/main/resources/assets/clayium/textures`.
-7. Add or update JUnit/GameTest coverage for the new registry surface, generated recipe expectations, and any promised behavior.
-8. Update `docs/legacy-port-ledger.md` in the same change.
+4. Preserve or derive the legacy tier value in the catalog/material/tier enum before wiring registration.
+5. For tool items, choose or add a `SimpleItemKind` and wire behavior through `ClayiumItems`, `ClayiumTags`, and tag datagen.
+6. Extend datagen helpers instead of adding hand-written JSON.
+7. Copy only required legacy PNGs into `src/main/resources/assets/clayium/textures`.
+8. Add or update JUnit/GameTest coverage for the new registry surface, generated recipe expectations, and any promised behavior.
+9. Update `docs/legacy-port-ledger.md` in the same change.
 
 ## Datagen Ownership
 

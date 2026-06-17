@@ -30,6 +30,7 @@ public final class ClayiumLanguageProvider extends LanguageProvider {
         this.add("itemGroup.clayium.main", "Clayium Reforged");
         this.add("jei.clayium.category.clay_work_table", "Clay Work Table");
         this.add("container.clayium.clay_work_table", "Clay Work Table");
+        this.add("tooltip.clayium.tier", "Tier %s");
         ACTION_NAMES.forEach((id, name) -> this.add("container.clayium.clay_work_table.action." + id, name));
         ITEM_TOOLTIPS.forEach((id, tooltip) -> this.add("item.clayium." + id + ".tooltip", tooltip));
 

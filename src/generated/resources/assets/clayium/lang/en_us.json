@@ -85,5 +85,6 @@
   "item.clayium.raw_clay_spatula": "Raw Clay Spatula",
   "item.clayium.simple_circuit": "Simple Circuit",
   "itemGroup.clayium.main": "Clayium Reforged",
-  "jei.clayium.category.clay_work_table": "Clay Work Table"
+  "jei.clayium.category.clay_work_table": "Clay Work Table",
+  "tooltip.clayium.tier": "Tier %s"
 }

@@ -11,12 +11,12 @@ import java.util.stream.Collectors;
 
 public final class ClayiumContentCatalog {
     private static final List<BlockSpec> BLOCKS = List.of(
-            block("dense_clay", "Dense Clay", "dense_clay", BlockKind.COMPRESSED_CLAY, HarvestTool.SHOVEL, ContentStatus.PORTED),
-            block("compressed_clay", "Compressed Clay", "compressed_clay", BlockKind.COMPRESSED_CLAY, HarvestTool.SHOVEL, ContentStatus.PORTED),
-            block("industrial_clay", "Industrial Clay", "industrial_clay", BlockKind.COMPRESSED_CLAY, HarvestTool.SHOVEL, ContentStatus.PORTED),
-            block("advanced_industrial_clay", "Advanced Industrial Clay", "advanced_industrial_clay", BlockKind.COMPRESSED_CLAY, HarvestTool.SHOVEL, ContentStatus.PORTED),
-            block("clay_work_table", "Clay Work Table", "clay_work_table", BlockKind.WORK_TABLE, HarvestTool.NONE, ContentStatus.PORTED),
-            block("raw_clay_machine_hull", "Raw Clay Machine Hull", "raw_clay_machine_hull", BlockKind.RAW_MACHINE_HULL, HarvestTool.SHOVEL, ContentStatus.PORTED),
+            block("dense_clay", "Dense Clay", "dense_clay", 0, BlockKind.COMPRESSED_CLAY, HarvestTool.SHOVEL, ContentStatus.PORTED),
+            block("compressed_clay", "Compressed Clay", "compressed_clay", 1, BlockKind.COMPRESSED_CLAY, HarvestTool.SHOVEL, ContentStatus.PORTED),
+            block("industrial_clay", "Industrial Clay", "industrial_clay", 2, BlockKind.COMPRESSED_CLAY, HarvestTool.SHOVEL, ContentStatus.PORTED),
+            block("advanced_industrial_clay", "Advanced Industrial Clay", "advanced_industrial_clay", 3, BlockKind.COMPRESSED_CLAY, HarvestTool.SHOVEL, ContentStatus.PORTED),
+            block("clay_work_table", "Clay Work Table", "clay_work_table", 0, BlockKind.WORK_TABLE, HarvestTool.NONE, ContentStatus.PORTED),
+            block("raw_clay_machine_hull", "Raw Clay Machine Hull", "raw_clay_machine_hull", 1, BlockKind.RAW_MACHINE_HULL, HarvestTool.SHOVEL, ContentStatus.PORTED),
             machineHull(MachineHullTier.CLAY),
             machineHull(MachineHullTier.DENSE_CLAY),
             machineHull(MachineHullTier.SIMPLE),
@@ -46,16 +46,16 @@ public final class ClayiumContentCatalog {
             tool("clay_shovel", "Clay Shovel", SimpleItemKind.CLAY_SHOVEL, ContentStatus.PORTED),
             tool("clay_pickaxe", "Clay Pickaxe", SimpleItemKind.CLAY_PICKAXE, ContentStatus.PORTED),
             tool("clay_wrench", "Clay Wrench", SimpleItemKind.CLAY_WRENCH, ContentStatus.PORTED),
-            progression("clay_circuit_board", "Clay Circuit Board", ContentStatus.REGISTERED_ONLY),
-            progression("clay_circuit", "Clay Circuit", ContentStatus.REGISTERED_ONLY),
-            progression("simple_circuit", "Simple Circuit", ContentStatus.REGISTERED_ONLY),
-            progression("basic_circuit", "Basic Circuit", ContentStatus.REGISTERED_ONLY),
-            progression("cee_board", "CEE Board", ContentStatus.REGISTERED_ONLY),
-            progression("cee_circuit", "CEE Circuit", ContentStatus.REGISTERED_ONLY),
-            progression("cee", "Clay Energy Excitor", ContentStatus.REGISTERED_ONLY),
-            progression("compressed_clay_shard", "Compressed Clay Shard", ContentStatus.REGISTERED_ONLY),
-            progression("industrial_clay_shard", "Industrial Clay Shard", ContentStatus.REGISTERED_ONLY),
-            progression("advanced_industrial_clay_shard", "Advanced Industrial Clay Shard", ContentStatus.REGISTERED_ONLY)
+            progression("clay_circuit_board", "Clay Circuit Board", 2, ContentStatus.REGISTERED_ONLY),
+            progression("clay_circuit", "Clay Circuit", 2, ContentStatus.REGISTERED_ONLY),
+            progression("simple_circuit", "Simple Circuit", 3, ContentStatus.REGISTERED_ONLY),
+            progression("basic_circuit", "Basic Circuit", 4, ContentStatus.REGISTERED_ONLY),
+            progression("cee_board", "CEE Board", 3, ContentStatus.REGISTERED_ONLY),
+            progression("cee_circuit", "CEE Circuit", 3, ContentStatus.REGISTERED_ONLY),
+            progression("cee", "Clay Energy Excitor", 3, ContentStatus.REGISTERED_ONLY),
+            progression("compressed_clay_shard", "Compressed Clay Shard", 1, ContentStatus.REGISTERED_ONLY),
+            progression("industrial_clay_shard", "Industrial Clay Shard", 2, ContentStatus.REGISTERED_ONLY),
+            progression("advanced_industrial_clay_shard", "Advanced Industrial Clay Shard", 3, ContentStatus.REGISTERED_ONLY)
     );
     private static final Map<String, SimpleItemSpec> SIMPLE_ITEMS_BY_ID = SIMPLE_ITEMS.stream()
             .collect(Collectors.toUnmodifiableMap(SimpleItemSpec::id, Function.identity()));
@@ -170,12 +170,12 @@ public final class ClayiumContentCatalog {
         return new MaterialFormSpec(material, partType, status, id);
     }
 
-    private static BlockSpec block(String id, String translation, String texture, BlockKind kind, HarvestTool harvestTool, ContentStatus status) {
-        return new BlockSpec(id, translation, texture, kind, harvestTool, status);
+    private static BlockSpec block(String id, String translation, String texture, int tier, BlockKind kind, HarvestTool harvestTool, ContentStatus status) {
+        return new BlockSpec(id, translation, texture, tier, kind, harvestTool, status);
     }
 
     private static BlockSpec machineHull(MachineHullTier tier) {
-        return block(tier.id(), tier.translation(), tier.texture(), BlockKind.MACHINE_HULL, HarvestTool.PICKAXE, tier.status());
+        return block(tier.id(), tier.translation(), tier.texture(), tier.tier(), BlockKind.MACHINE_HULL, HarvestTool.PICKAXE, tier.status());
     }
 
     private static SimpleItemSpec tool(String id, String translation, SimpleItemKind kind, ContentStatus status) {
@@ -191,11 +191,11 @@ public final class ClayiumContentCatalog {
     }
 
     private static SimpleItemSpec tool(String id, String translation, SimpleItemKind kind, int durability, int brokenClayBallCount, ContentStatus status) {
-        return new SimpleItemSpec(id, translation, CreativeCategory.TOOLS, ItemModelKind.GENERATED, kind, durability, brokenClayBallCount, status);
+        return new SimpleItemSpec(id, translation, CreativeCategory.TOOLS, ItemModelKind.GENERATED, kind, ClayMaterial.CLAY.tier(), durability, brokenClayBallCount, status);
     }
 
-    private static SimpleItemSpec progression(String id, String translation, ContentStatus status) {
-        return new SimpleItemSpec(id, translation, CreativeCategory.PROGRESSION, ItemModelKind.GENERATED, SimpleItemKind.GENERIC, 0, 0, status);
+    private static SimpleItemSpec progression(String id, String translation, int tier, ContentStatus status) {
+        return new SimpleItemSpec(id, translation, CreativeCategory.PROGRESSION, ItemModelKind.GENERATED, SimpleItemKind.GENERIC, tier, 0, 0, status);
     }
 
     public enum BlockKind {
@@ -256,6 +256,7 @@ public final class ClayiumContentCatalog {
             String id,
             String translation,
             String texture,
+            int tier,
             BlockKind kind,
             HarvestTool harvestTool,
             ContentStatus status
@@ -275,6 +276,10 @@ public final class ClayiumContentCatalog {
         public String translation() {
             return this.partType.translation(this.material);
         }
+
+        public int tier() {
+            return this.material.tier();
+        }
     }
 
     public record SimpleItemSpec(
@@ -283,6 +288,7 @@ public final class ClayiumContentCatalog {
             CreativeCategory creativeCategory,
             ItemModelKind modelKind,
             SimpleItemKind kind,
+            int tier,
             int durability,
             int brokenClayBallCount,
             ContentStatus status

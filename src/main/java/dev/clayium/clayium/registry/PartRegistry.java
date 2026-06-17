@@ -1,5 +1,6 @@
 package dev.clayium.clayium.registry;
 
+import dev.clayium.clayium.item.ClayiumTieredItem;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumMap;
@@ -25,7 +26,10 @@ public final class PartRegistry {
             parts.put(material, new EnumMap<>(ClayPartType.class));
         }
         for (ClayiumContentCatalog.MaterialFormSpec spec : ClayiumContentCatalog.registeredMaterialItems()) {
-            DeferredItem<Item> item = items.registerSimpleItem(spec.id());
+            DeferredItem<Item> item = items.<Item>registerItem(
+                    spec.id(),
+                    properties -> new ClayiumTieredItem(properties, spec.tier())
+            );
             parts.get(spec.material()).put(spec.partType(), item);
             registeredItems.add(item);
             creativeTracker.accept(item);

@@ -45,6 +45,10 @@ These boxes mean the old source domain has been surveyed for the initial Phase 1
 - [x] `plugin/LoadIC2Plugin.java`, `plugin/UtilGT.java`, and old IC2/GT helpers: not migrated.
 - [x] `asm/*` and `sample/*`: dropped for NeoForge 26.x.
 
+## Cross-Cutting Player-Facing Behavior
+
+- [x] Tier tooltips from `ItemTiered`, `ItemDamaged`, and `ItemBlockTiered` (`Done`, Phase 2 hotfix): ported current cataloged block items, simple items, tools, and material forms to shared tier tooltip helpers backed by catalog/material/hull tier metadata.
+
 ## Blocks From `CBlocks`
 
 - [x] `blockClayWorkTable` -> `clay_work_table` (`Done`, Phase 1): menu, screen, inventory drop, Work Table recipes, JEI, tests.

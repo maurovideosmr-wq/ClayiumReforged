@@ -10,12 +10,14 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.level.block.state.BlockState;
 
-public final class ClayShovelItem extends ShovelItem {
+public final class ClayShovelItem extends ShovelItem implements ClayiumTiered {
     private static final float CLAY_BLOCK_SPEED = 32.0F;
     private static final float CLAY_ORE_SPEED = 12.0F;
+    private final int tier;
 
-    public ClayShovelItem(Item.Properties properties) {
+    public ClayShovelItem(Item.Properties properties, int tier) {
         super(ClayiumToolMaterials.CLAY_SHOVEL, 1.5F, -3.0F, properties);
+        this.tier = tier;
     }
 
     @Override
@@ -31,6 +33,13 @@ public final class ClayShovelItem extends ShovelItem {
 
     @Override
     public void appendHoverText(ItemStack stack, Item.TooltipContext context, TooltipDisplay display, Consumer<Component> builder, TooltipFlag tooltipFlag) {
+        ClayiumTooltips.appendTier(builder, this.clayiumTier());
+        super.appendHoverText(stack, context, display, builder, tooltipFlag);
         builder.accept(Component.translatable("item.clayium.clay_shovel.tooltip"));
+    }
+
+    @Override
+    public int clayiumTier() {
+        return this.tier;
     }
 }
