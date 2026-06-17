@@ -1,0 +1,1034 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Clayium Machine IO Panel Dummy</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --paper: #f7f4ec;
+      --ink: #25231f;
+      --muted: #6c675d;
+      --line: #c9bda7;
+      --line-strong: #9e8f78;
+      --clay: #b75d34;
+      --clay-dark: #7d3e26;
+      --teal: #286f6c;
+      --teal-soft: #d7eeeb;
+      --amber: #d29a22;
+      --amber-soft: #fff1c6;
+      --redstone: #a63b32;
+      --green: #4f7d45;
+      --panel: #fffdf7;
+      --panel-alt: #eee6d7;
+      --shadow: rgba(45, 33, 20, 0.14);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: Inter, Segoe UI, Arial, sans-serif;
+      letter-spacing: 0;
+    }
+
+    button,
+    select {
+      font: inherit;
+    }
+
+    .app {
+      min-height: 100vh;
+      padding: 18px;
+    }
+
+    .shell {
+      display: grid;
+      grid-template-rows: auto 1fr;
+      gap: 14px;
+      max-width: 1280px;
+      margin: 0 auto;
+    }
+
+    .topbar {
+      display: grid;
+      grid-template-columns: minmax(260px, 1fr) auto;
+      align-items: end;
+      gap: 16px;
+      border: 1px solid var(--line);
+      background: var(--panel);
+      box-shadow: 0 10px 30px var(--shadow);
+      padding: 14px;
+      border-radius: 8px;
+    }
+
+    .title-block {
+      display: grid;
+      gap: 4px;
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      margin: 0;
+    }
+
+    h1 {
+      font-size: 22px;
+      line-height: 1.1;
+      font-weight: 800;
+    }
+
+    .subtle {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .tabs,
+    .segmented,
+    .button-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .tab,
+    .chip-button,
+    .icon-button {
+      border: 1px solid var(--line-strong);
+      background: #fbf7ec;
+      color: var(--ink);
+      min-height: 34px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .tab {
+      padding: 0 14px;
+      font-weight: 700;
+    }
+
+    .tab[aria-selected="true"],
+    .chip-button.is-active,
+    .mode-button.is-active,
+    .icon-button.is-active {
+      background: var(--teal);
+      color: #ffffff;
+      border-color: var(--teal);
+    }
+
+    .machine-panel {
+      display: none;
+      grid-template-columns: minmax(320px, 0.92fr) minmax(520px, 1.4fr) minmax(300px, 0.85fr);
+      gap: 14px;
+      align-items: stretch;
+    }
+
+    .machine-panel.is-active {
+      display: grid;
+    }
+
+    .panel {
+      border: 1px solid var(--line);
+      background: var(--panel);
+      box-shadow: 0 10px 28px var(--shadow);
+      border-radius: 8px;
+      padding: 14px;
+      min-width: 0;
+    }
+
+    .panel-title {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .panel-title h2,
+    .panel-title h3 {
+      font-size: 16px;
+      font-weight: 800;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 24px;
+      padding: 0 8px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: var(--panel-alt);
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .badge.good {
+      border-color: #9fc899;
+      background: #e5f4dd;
+      color: var(--green);
+    }
+
+    .badge.warn {
+      border-color: #dfba57;
+      background: var(--amber-soft);
+      color: #7d5712;
+    }
+
+    .machine-body {
+      display: grid;
+      grid-template-rows: auto auto 1fr;
+      gap: 12px;
+    }
+
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .stat {
+      min-height: 64px;
+      border: 1px solid var(--line);
+      background: #fcf9f0;
+      border-radius: 6px;
+      padding: 10px;
+      display: grid;
+      align-content: center;
+      gap: 2px;
+    }
+
+    .stat .value {
+      font-size: 18px;
+      font-weight: 800;
+    }
+
+    .energy-meter {
+      position: relative;
+      border: 1px solid var(--line);
+      background: #fcf8ed;
+      border-radius: 6px;
+      padding: 10px;
+      display: grid;
+      gap: 8px;
+    }
+
+    .energy-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      align-items: center;
+      font-weight: 800;
+    }
+
+    .energy-track {
+      height: 18px;
+      border-radius: 4px;
+      border: 1px solid #b98a45;
+      background: #5e3a20;
+      overflow: hidden;
+    }
+
+    .energy-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #c97d2e, #e8c949, #7ecfc1);
+      width: var(--fill);
+    }
+
+    .floating-tip {
+      position: absolute;
+      left: 10px;
+      right: 10px;
+      top: calc(100% - 2px);
+      padding: 10px;
+      border: 1px solid var(--line-strong);
+      background: #2e2922;
+      color: #fff8ec;
+      border-radius: 6px;
+      font-size: 12px;
+      line-height: 1.45;
+      opacity: 0;
+      transform: translateY(-4px);
+      pointer-events: none;
+      transition: opacity 120ms ease, transform 120ms ease;
+      z-index: 4;
+    }
+
+    .energy-meter:hover .floating-tip,
+    .energy-meter:focus-within .floating-tip {
+      opacity: 1;
+      transform: translateY(6px);
+    }
+
+    .slot-map {
+      display: grid;
+      gap: 8px;
+    }
+
+    .slots-row {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .slots-row.wide {
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+    }
+
+    .slot {
+      min-height: 70px;
+      border: 2px solid var(--line-strong);
+      background: #e8dfce;
+      border-radius: 4px;
+      box-shadow: inset 2px 2px 0 rgba(45, 35, 24, 0.24), inset -2px -2px 0 rgba(255, 255, 255, 0.75);
+      padding: 8px;
+      display: grid;
+      align-content: center;
+      justify-items: center;
+      text-align: center;
+      gap: 4px;
+      min-width: 0;
+    }
+
+    .slot strong {
+      font-size: 13px;
+      line-height: 1.1;
+    }
+
+    .slot span {
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .slot.input {
+      border-color: #8aa679;
+    }
+
+    .slot.output {
+      border-color: #ba8a4c;
+    }
+
+    .slot.energy {
+      border-color: #67aaa4;
+    }
+
+    .slot.buffer {
+      border-color: #aa9bca;
+    }
+
+    .face-editor {
+      display: grid;
+      gap: 10px;
+    }
+
+    .face-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .face-card {
+      border: 1px solid var(--line);
+      background: #fcf9f0;
+      border-radius: 6px;
+      padding: 10px;
+      display: grid;
+      gap: 9px;
+      min-width: 0;
+    }
+
+    .face-card header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .face-card h3 {
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    .mode-row {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 4px;
+    }
+
+    .mode-button {
+      min-height: 30px;
+      border-radius: 4px;
+      border: 1px solid var(--line-strong);
+      background: #f8efe0;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .route-select,
+    .filter-select {
+      width: 100%;
+      min-height: 34px;
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      background: #fffdf8;
+      color: var(--ink);
+      padding: 0 8px;
+    }
+
+    .route-line {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+    }
+
+    .transfer-panel {
+      display: grid;
+      gap: 10px;
+    }
+
+    .transfer-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .transfer-unit {
+      border: 1px solid var(--line);
+      background: #fcf9f0;
+      border-radius: 6px;
+      padding: 10px;
+      display: grid;
+      gap: 8px;
+    }
+
+    .transfer-unit strong {
+      font-size: 14px;
+    }
+
+    .icon-button {
+      min-height: 38px;
+      padding: 0 10px;
+      font-weight: 800;
+    }
+
+    .redstone-row {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .redstone-state {
+      border: 1px solid #c48c83;
+      background: #fde9e6;
+      color: var(--redstone);
+      min-height: 44px;
+      display: grid;
+      place-items: center;
+      border-radius: 6px;
+      font-weight: 800;
+    }
+
+    .matrix {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+      font-size: 12px;
+    }
+
+    .matrix th,
+    .matrix td {
+      border: 1px solid var(--line);
+      padding: 8px 6px;
+      text-align: left;
+      vertical-align: middle;
+      background: #fcf9f0;
+    }
+
+    .matrix th {
+      background: var(--panel-alt);
+      color: var(--muted);
+      font-weight: 800;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      min-height: 22px;
+      padding: 0 7px;
+      border-radius: 999px;
+      font-weight: 800;
+      font-size: 11px;
+      border: 1px solid var(--line);
+      background: #fffaf0;
+      white-space: nowrap;
+    }
+
+    .pill.in {
+      border-color: #8aa679;
+      color: #456d3a;
+      background: #eef7e9;
+    }
+
+    .pill.out {
+      border-color: #ba8a4c;
+      color: #835622;
+      background: #fff0d7;
+    }
+
+    .pill.io {
+      border-color: #6b9fba;
+      color: #2e6177;
+      background: #e5f4fa;
+    }
+
+    .pill.energy {
+      border-color: #67aaa4;
+      color: #286f6c;
+      background: var(--teal-soft);
+    }
+
+    .status-strip {
+      min-height: 42px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: #f4eddf;
+      padding: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .status-strip strong {
+      color: var(--ink);
+    }
+
+    .exposure-note {
+      border: 1px solid var(--line);
+      background: #fcf9f0;
+      border-radius: 6px;
+      padding: 10px;
+      display: grid;
+      gap: 8px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .exposure-note strong {
+      color: var(--ink);
+    }
+
+    @media (max-width: 1100px) {
+      .machine-panel.is-active {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .panel.side {
+        grid-column: 1 / -1;
+      }
+    }
+
+    @media (max-width: 760px) {
+      .app {
+        padding: 10px;
+      }
+
+      .topbar,
+      .machine-panel.is-active,
+      .slots-row,
+      .slots-row.wide,
+      .face-grid,
+      .transfer-grid,
+      .redstone-row {
+        grid-template-columns: 1fr;
+      }
+
+      .mode-row {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <div class="shell">
+      <section class="topbar" aria-label="Machine IO dummy tabs">
+        <div class="title-block">
+          <h1>Clayium Machine IO Panel</h1>
+          <p class="subtle">Single-page dummy for the modern machine screen model.</p>
+        </div>
+        <div class="tabs" role="tablist" aria-label="Machine profiles">
+          <button class="tab" type="button" role="tab" aria-selected="true" data-target="single-panel">Single I/O</button>
+          <button class="tab" type="button" role="tab" aria-selected="false" data-target="multi-panel">Multi I/O</button>
+        </div>
+      </section>
+
+      <section class="machine-panel is-active" id="single-panel" aria-label="Single input output machine">
+        <aside class="panel">
+          <div class="panel-title">
+            <h2>Bending Machine Mk V</h2>
+            <span class="badge good">Tier 5</span>
+          </div>
+          <div class="machine-body">
+            <div class="stat-grid">
+              <div class="stat">
+                <span class="subtle">Recipe</span>
+                <span class="value">1 -> 1</span>
+              </div>
+              <div class="stat">
+                <span class="subtle">Cycle</span>
+                <span class="value">80 t</span>
+              </div>
+            </div>
+
+            <div class="energy-meter" tabindex="0" style="--fill: 64%;">
+              <div class="energy-head">
+                <span>Clay Energy</span>
+                <span>64.0 kCE</span>
+              </div>
+              <div class="energy-track" aria-hidden="true">
+                <div class="energy-fill"></div>
+              </div>
+              <div class="floating-tip">
+                Stored: 64.0 kCE / Buffer: 100.0 kCE<br>
+                Draw: 10 CE/t while active<br>
+                Fuel slot: Energetic Clay route
+              </div>
+            </div>
+
+            <div class="slot-map" aria-label="Single machine slots">
+              <div class="slots-row">
+                <div class="slot input"><strong>Input</strong><span>slot 0</span></div>
+                <div class="slot buffer"><strong>Work</strong><span>slot 2</span></div>
+                <div class="slot output"><strong>Output</strong><span>slot 1</span></div>
+                <div class="slot energy"><strong>CE</strong><span>slot 3</span></div>
+              </div>
+            </div>
+
+            <div class="status-strip" data-status="single">
+              <strong>Transfer:</strong>
+              <span data-pull-status>pull idle</span>
+              <span data-push-status>push idle</span>
+            </div>
+          </div>
+        </aside>
+
+        <section class="panel">
+          <div class="panel-title">
+            <h2>Face Exposure</h2>
+            <span class="badge">capability first</span>
+          </div>
+          <div class="face-editor" data-profile="single">
+            <div class="face-grid">
+              <article class="face-card" data-face="north">
+                <header><h3>North</h3><span class="pill in">material</span></header>
+                <div class="mode-row">
+                  <button class="mode-button" data-mode="off">OFF</button>
+                  <button class="mode-button is-active" data-mode="in">IN</button>
+                  <button class="mode-button" data-mode="out">OUT</button>
+                  <button class="mode-button" data-mode="io">I/O</button>
+                  <button class="mode-button" data-mode="ce">CE</button>
+                </div>
+                <div class="route-line">
+                  <select class="route-select" aria-label="North route">
+                    <option>Input route 0</option>
+                    <option>Energy route 1</option>
+                    <option>Output route 0</option>
+                  </select>
+                  <select class="filter-select" aria-label="North filter">
+                    <option>Filter: Any</option>
+                    <option>Filter: Plates</option>
+                    <option>Filter: Clay only</option>
+                  </select>
+                </div>
+              </article>
+
+              <article class="face-card" data-face="south">
+                <header><h3>South</h3><span class="pill out">output</span></header>
+                <div class="mode-row">
+                  <button class="mode-button" data-mode="off">OFF</button>
+                  <button class="mode-button" data-mode="in">IN</button>
+                  <button class="mode-button is-active" data-mode="out">OUT</button>
+                  <button class="mode-button" data-mode="io">I/O</button>
+                  <button class="mode-button" data-mode="ce">CE</button>
+                </div>
+                <div class="route-line">
+                  <select class="route-select" aria-label="South route">
+                    <option>Output route 0</option>
+                    <option>Input route 0</option>
+                    <option>Energy route 1</option>
+                  </select>
+                  <select class="filter-select" aria-label="South filter">
+                    <option>Filter: Any</option>
+                    <option>Filter: Finished</option>
+                    <option>Filter: Blocked</option>
+                  </select>
+                </div>
+              </article>
+
+              <article class="face-card" data-face="east">
+                <header><h3>East</h3><span class="pill energy">energy</span></header>
+                <div class="mode-row">
+                  <button class="mode-button" data-mode="off">OFF</button>
+                  <button class="mode-button" data-mode="in">IN</button>
+                  <button class="mode-button" data-mode="out">OUT</button>
+                  <button class="mode-button" data-mode="io">I/O</button>
+                  <button class="mode-button is-active" data-mode="ce">CE</button>
+                </div>
+                <div class="route-line">
+                  <select class="route-select" aria-label="East route">
+                    <option>Energy route 1</option>
+                    <option>Input route 0</option>
+                    <option>Output route 0</option>
+                  </select>
+                  <select class="filter-select" aria-label="East filter">
+                    <option>Filter: Energetic Clay</option>
+                    <option>Filter: Any CE</option>
+                  </select>
+                </div>
+              </article>
+
+              <article class="face-card" data-face="west">
+                <header><h3>West</h3><span class="pill">off</span></header>
+                <div class="mode-row">
+                  <button class="mode-button is-active" data-mode="off">OFF</button>
+                  <button class="mode-button" data-mode="in">IN</button>
+                  <button class="mode-button" data-mode="out">OUT</button>
+                  <button class="mode-button" data-mode="io">I/O</button>
+                  <button class="mode-button" data-mode="ce">CE</button>
+                </div>
+                <div class="route-line">
+                  <select class="route-select" aria-label="West route">
+                    <option>Disabled</option>
+                    <option>Input route 0</option>
+                    <option>Output route 0</option>
+                  </select>
+                  <select class="filter-select" aria-label="West filter">
+                    <option>Filter: Any</option>
+                  </select>
+                </div>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <aside class="panel side">
+          <div class="panel-title">
+            <h2>Control</h2>
+            <span class="badge warn">manual arm</span>
+          </div>
+          <div class="transfer-panel" data-profile="single">
+            <div class="transfer-grid">
+              <div class="transfer-unit">
+                <strong>Auto Pull</strong>
+                <span class="subtle">Uses exposed input faces.</span>
+                <button class="icon-button" type="button" data-transfer="pull" title="Arm or disarm auto pull">&lt; Arm</button>
+              </div>
+              <div class="transfer-unit">
+                <strong>Auto Push</strong>
+                <span class="subtle">Uses exposed output faces.</span>
+                <button class="icon-button" type="button" data-transfer="push" title="Arm or disarm auto push">&gt; Arm</button>
+              </div>
+            </div>
+
+            <div class="panel-title">
+              <h3>Redstone</h3>
+              <span class="badge">signal low</span>
+            </div>
+            <div class="redstone-row" role="group" aria-label="Single redstone mode">
+              <button class="chip-button is-active" type="button">Ignore</button>
+              <button class="chip-button" type="button">High</button>
+              <button class="chip-button" type="button">Low</button>
+              <button class="chip-button" type="button">Pulse</button>
+            </div>
+            <div class="redstone-state">Machine Enabled</div>
+
+            <table class="matrix" aria-label="Single route matrix">
+              <thead>
+                <tr><th>Route</th><th>Slots</th><th>Exposed</th></tr>
+              </thead>
+              <tbody>
+                <tr><td><span class="pill in">Input 0</span></td><td>0</td><td>North</td></tr>
+                <tr><td><span class="pill energy">Energy 1</span></td><td>3</td><td>East</td></tr>
+                <tr><td><span class="pill out">Output 0</span></td><td>1</td><td>South</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </aside>
+      </section>
+
+      <section class="machine-panel" id="multi-panel" aria-label="Multi input output machine">
+        <aside class="panel">
+          <div class="panel-title">
+            <h2>Clay Reactor Mk VIII</h2>
+            <span class="badge good">Tier 8</span>
+          </div>
+          <div class="machine-body">
+            <div class="stat-grid">
+              <div class="stat">
+                <span class="subtle">Recipe</span>
+                <span class="value">2 -> 2</span>
+              </div>
+              <div class="stat">
+                <span class="subtle">Cycle</span>
+                <span class="value">320 t</span>
+              </div>
+            </div>
+
+            <div class="energy-meter" tabindex="0" style="--fill: 38%;">
+              <div class="energy-head">
+                <span>Clay Energy</span>
+                <span>3.8 MCE</span>
+              </div>
+              <div class="energy-track" aria-hidden="true">
+                <div class="energy-fill"></div>
+              </div>
+              <div class="floating-tip">
+                Stored: 3.8 MCE / Buffer: 10.0 MCE<br>
+                Draw: 1.0 kCE/t while active<br>
+                Fuel slot: compressed energy route
+              </div>
+            </div>
+
+            <div class="slot-map" aria-label="Multi machine slots">
+              <div class="slots-row wide">
+                <div class="slot input"><strong>Input A</strong><span>slot 0</span></div>
+                <div class="slot input"><strong>Input B</strong><span>slot 1</span></div>
+                <div class="slot buffer"><strong>Work</strong><span>slot 4</span></div>
+                <div class="slot output"><strong>Output A</strong><span>slot 2</span></div>
+                <div class="slot output"><strong>Output B</strong><span>slot 3</span></div>
+              </div>
+              <div class="slots-row">
+                <div class="slot energy"><strong>CE</strong><span>slot 6</span></div>
+                <div class="slot input"><strong>Catalyst</strong><span>slot 5</span></div>
+                <div class="slot buffer"><strong>Scrap</strong><span>virtual</span></div>
+                <div class="slot output"><strong>Byproduct</strong><span>route 3</span></div>
+              </div>
+            </div>
+
+            <div class="status-strip" data-status="multi">
+              <strong>Transfer:</strong>
+              <span data-pull-status>pull idle</span>
+              <span data-push-status>push idle</span>
+            </div>
+          </div>
+        </aside>
+
+        <section class="panel">
+          <div class="panel-title">
+            <h2>Face Exposure</h2>
+            <span class="badge">route matrix</span>
+          </div>
+          <div class="face-editor" data-profile="multi">
+            <div class="face-grid">
+              <article class="face-card" data-face="north">
+                <header><h3>North</h3><span class="pill io">A+B</span></header>
+                <div class="mode-row">
+                  <button class="mode-button" data-mode="off">OFF</button>
+                  <button class="mode-button" data-mode="in">IN</button>
+                  <button class="mode-button" data-mode="out">OUT</button>
+                  <button class="mode-button is-active" data-mode="io">I/O</button>
+                  <button class="mode-button" data-mode="ce">CE</button>
+                </div>
+                <div class="route-line">
+                  <select class="route-select" aria-label="North route multi">
+                    <option>Input route 2: A+B</option>
+                    <option>Output route 2: all</option>
+                    <option>Energy route 3</option>
+                  </select>
+                  <select class="filter-select" aria-label="North filter multi">
+                    <option>Filter: Recipe set</option>
+                    <option>Filter: Any</option>
+                  </select>
+                </div>
+              </article>
+
+              <article class="face-card" data-face="east">
+                <header><h3>East</h3><span class="pill energy">energy</span></header>
+                <div class="mode-row">
+                  <button class="mode-button" data-mode="off">OFF</button>
+                  <button class="mode-button" data-mode="in">IN</button>
+                  <button class="mode-button" data-mode="out">OUT</button>
+                  <button class="mode-button" data-mode="io">I/O</button>
+                  <button class="mode-button is-active" data-mode="ce">CE</button>
+                </div>
+                <div class="route-line">
+                  <select class="route-select" aria-label="East route multi">
+                    <option>Energy route 3</option>
+                    <option>Input route 0: A</option>
+                    <option>Input route 1: B</option>
+                  </select>
+                  <select class="filter-select" aria-label="East filter multi">
+                    <option>Filter: CE blocks</option>
+                    <option>Filter: Any CE</option>
+                  </select>
+                </div>
+              </article>
+
+              <article class="face-card" data-face="south">
+                <header><h3>South</h3><span class="pill out">all out</span></header>
+                <div class="mode-row">
+                  <button class="mode-button" data-mode="off">OFF</button>
+                  <button class="mode-button" data-mode="in">IN</button>
+                  <button class="mode-button is-active" data-mode="out">OUT</button>
+                  <button class="mode-button" data-mode="io">I/O</button>
+                  <button class="mode-button" data-mode="ce">CE</button>
+                </div>
+                <div class="route-line">
+                  <select class="route-select" aria-label="South route multi">
+                    <option>Output route 2: all</option>
+                    <option>Output route 0: primary</option>
+                    <option>Output route 1: secondary</option>
+                  </select>
+                  <select class="filter-select" aria-label="South filter multi">
+                    <option>Filter: Any output</option>
+                    <option>Filter: Primary only</option>
+                    <option>Filter: Secondary only</option>
+                  </select>
+                </div>
+              </article>
+
+              <article class="face-card" data-face="west">
+                <header><h3>West</h3><span class="pill in">catalyst</span></header>
+                <div class="mode-row">
+                  <button class="mode-button" data-mode="off">OFF</button>
+                  <button class="mode-button is-active" data-mode="in">IN</button>
+                  <button class="mode-button" data-mode="out">OUT</button>
+                  <button class="mode-button" data-mode="io">I/O</button>
+                  <button class="mode-button" data-mode="ce">CE</button>
+                </div>
+                <div class="route-line">
+                  <select class="route-select" aria-label="West route multi">
+                    <option>Input route 4: catalyst</option>
+                    <option>Input route 0: A</option>
+                    <option>Input route 1: B</option>
+                  </select>
+                  <select class="filter-select" aria-label="West filter multi">
+                    <option>Filter: Catalyst</option>
+                    <option>Filter: Any</option>
+                  </select>
+                </div>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <aside class="panel side">
+          <div class="panel-title">
+            <h2>Control</h2>
+            <span class="badge warn">manual arm</span>
+          </div>
+          <div class="transfer-panel" data-profile="multi">
+            <div class="transfer-grid">
+              <div class="transfer-unit">
+                <strong>Auto Pull</strong>
+                <span class="subtle">Performs input-side pulls.</span>
+                <button class="icon-button" type="button" data-transfer="pull" title="Arm or disarm auto pull">&lt; Arm</button>
+              </div>
+              <div class="transfer-unit">
+                <strong>Auto Push</strong>
+                <span class="subtle">Performs output-side pushes.</span>
+                <button class="icon-button" type="button" data-transfer="push" title="Arm or disarm auto push">&gt; Arm</button>
+              </div>
+            </div>
+
+            <div class="panel-title">
+              <h3>Redstone</h3>
+              <span class="badge">signal high</span>
+            </div>
+            <div class="redstone-row" role="group" aria-label="Multi redstone mode">
+              <button class="chip-button" type="button">Ignore</button>
+              <button class="chip-button is-active" type="button">High</button>
+              <button class="chip-button" type="button">Low</button>
+              <button class="chip-button" type="button">Pulse</button>
+            </div>
+            <div class="redstone-state">Machine Enabled</div>
+
+            <table class="matrix" aria-label="Multi route matrix">
+              <thead>
+                <tr><th>Route</th><th>Slots</th><th>Exposed</th></tr>
+              </thead>
+              <tbody>
+                <tr><td><span class="pill in">Input 0</span></td><td>0</td><td>North</td></tr>
+                <tr><td><span class="pill in">Input 1</span></td><td>1</td><td>North</td></tr>
+                <tr><td><span class="pill io">Input 2</span></td><td>0, 1</td><td>North</td></tr>
+                <tr><td><span class="pill energy">Energy 3</span></td><td>6</td><td>East</td></tr>
+                <tr><td><span class="pill out">Output 0</span></td><td>2</td><td>South</td></tr>
+                <tr><td><span class="pill out">Output 1</span></td><td>3</td><td>South</td></tr>
+                <tr><td><span class="pill io">Output 2</span></td><td>2, 3</td><td>South</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </aside>
+      </section>
+    </div>
+  </main>
+
+  <script>
+    const tabs = document.querySelectorAll(".tab");
+    const panels = document.querySelectorAll(".machine-panel");
+
+    tabs.forEach((tab) => {
+      tab.addEventListener("click", () => {
+        tabs.forEach((item) => item.setAttribute("aria-selected", "false"));
+        panels.forEach((panel) => panel.classList.remove("is-active"));
+        tab.setAttribute("aria-selected", "true");
+        document.getElementById(tab.dataset.target).classList.add("is-active");
+      });
+    });
+
+    document.querySelectorAll(".face-card").forEach((card) => {
+      card.querySelectorAll(".mode-button").forEach((button) => {
+        button.addEventListener("click", () => {
+          card.querySelectorAll(".mode-button").forEach((item) => item.classList.remove("is-active"));
+          button.classList.add("is-active");
+          const pill = card.querySelector(".pill");
+          pill.className = "pill";
+          if (button.dataset.mode === "in") pill.classList.add("in");
+          if (button.dataset.mode === "out") pill.classList.add("out");
+          if (button.dataset.mode === "io") pill.classList.add("io");
+          if (button.dataset.mode === "ce") pill.classList.add("energy");
+          pill.textContent = button.dataset.mode === "off" ? "off" : button.dataset.mode.toUpperCase();
+        });
+      });
+    });
+
+    document.querySelectorAll(".transfer-panel").forEach((panel) => {
+      panel.querySelectorAll("[data-transfer]").forEach((button) => {
+        button.addEventListener("click", () => {
+          const profile = panel.dataset.profile;
+          const type = button.dataset.transfer;
+          button.classList.toggle("is-active");
+          const active = button.classList.contains("is-active");
+          button.textContent = type === "pull" ? (active ? "< Armed" : "< Arm") : (active ? "> Armed" : "> Arm");
+          const status = document.querySelector(`[data-status="${profile}"] [data-${type}-status]`);
+          if (status) status.textContent = active ? `${type} armed` : `${type} idle`;
+        });
+      });
+    });
+
+    document.querySelectorAll(".redstone-row").forEach((row) => {
+      row.querySelectorAll(".chip-button").forEach((button) => {
+        button.addEventListener("click", () => {
+          row.querySelectorAll(".chip-button").forEach((item) => item.classList.remove("is-active"));
+          button.classList.add("is-active");
+        });
+      });
+    });
+  </script>
+</body>
+</html>

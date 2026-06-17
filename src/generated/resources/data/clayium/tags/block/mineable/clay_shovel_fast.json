@@ -1,0 +1,10 @@
+{
+  "values": [
+    "clayium:dense_clay",
+    "clayium:compressed_clay",
+    "clayium:industrial_clay",
+    "clayium:advanced_industrial_clay",
+    "clayium:raw_clay_machine_hull",
+    "minecraft:clay"
+  ]
+}

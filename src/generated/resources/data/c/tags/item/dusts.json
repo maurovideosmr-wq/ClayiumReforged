@@ -1,0 +1,9 @@
+{
+  "values": [
+    "clayium:clay_dust",
+    "clayium:dense_clay_dust",
+    "clayium:industrial_clay_dust",
+    "clayium:advanced_industrial_clay_dust",
+    "clayium:energized_clay_dust"
+  ]
+}

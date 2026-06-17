@@ -9,10 +9,7 @@ import org.junit.jupiter.api.Test;
 class PartRegistryTest {
     @Test
     void materialPartsAreRegisteredThroughPartRegistry() {
-        long expectedPartCount = 0;
-        for (ClayPartType partType : ClayPartType.values()) {
-            expectedPartCount += partType.materials().size();
-        }
+        long expectedPartCount = ClayiumContentCatalog.registeredMaterialItems().size();
 
         assertEquals(expectedPartCount, ClayiumItems.PARTS.items().size());
         assertEquals(expectedPartCount, ClayiumItems.CREATIVE_PARTS.size());
@@ -23,6 +20,9 @@ class PartRegistryTest {
         assertSame(ClayiumItems.CLAY_PLATE, ClayiumItems.PARTS.get(ClayMaterial.CLAY, ClayPartType.PLATE));
         assertSame(ClayiumItems.CLAY_LARGE_BALL, ClayiumItems.PARTS.get(ClayMaterial.CLAY, ClayPartType.LARGE_BALL));
         assertSame(ClayiumItems.DENSE_CLAY_PLATE, ClayiumItems.PARTS.get(ClayMaterial.DENSE_CLAY, ClayPartType.PLATE));
+        assertSame(ClayiumItems.INDUSTRIAL_CLAY_DUST, ClayiumItems.PARTS.get(ClayMaterial.INDUSTRIAL_CLAY, ClayPartType.DUST));
+        assertSame(ClayiumItems.ENERGIZED_CLAY_DUST, ClayiumItems.PARTS.get(ClayMaterial.ENERGIZED_CLAY, ClayPartType.DUST));
         assertFalse(ClayiumItems.PARTS.contains(ClayMaterial.DENSE_CLAY, ClayPartType.LARGE_BALL));
+        assertFalse(ClayiumItems.PARTS.contains(ClayMaterial.ENERGIZED_CLAY, ClayPartType.PLATE));
     }
 }

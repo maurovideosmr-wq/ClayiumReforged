@@ -1,5 +1,8 @@
 {
   "values": [
-    "clayium:clay_machine_hull"
+    "clayium:clay_machine_hull",
+    "clayium:dense_clay_machine_hull",
+    "clayium:simple_machine_hull",
+    "clayium:basic_machine_hull"
   ]
 }

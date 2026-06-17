@@ -4,6 +4,7 @@ import dev.clayium.clayium.recipe.ClayWorkTableAction;
 import dev.clayium.clayium.recipe.ClayWorkTableRecipe;
 import dev.clayium.clayium.recipe.ClayWorkTableToolRequirement;
 import dev.clayium.clayium.registry.ClayiumItems;
+import dev.clayium.clayium.registry.ClayiumTags;
 import java.util.List;
 import java.util.function.Supplier;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -51,9 +52,7 @@ public final class ClayWorkTableOperations {
     }
 
     public static boolean isTool(ItemStack stack) {
-        return stack.is(ClayiumItems.CLAY_ROLLING_PIN.get())
-                || stack.is(ClayiumItems.CLAY_SLICER.get())
-                || stack.is(ClayiumItems.CLAY_SPATULA.get());
+        return stack.is(ClayiumTags.Items.CLAY_WORK_TABLE_TOOLS);
     }
 
     public static boolean canUseToolForButton(int buttonId, ItemStack tool) {

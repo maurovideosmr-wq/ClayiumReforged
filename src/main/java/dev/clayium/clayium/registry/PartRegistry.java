@@ -22,17 +22,13 @@ public final class PartRegistry {
         EnumMap<ClayMaterial, EnumMap<ClayPartType, DeferredItem<Item>>> parts = new EnumMap<>(ClayMaterial.class);
         List<DeferredItem<Item>> registeredItems = new ArrayList<>();
         for (ClayMaterial material : ClayMaterial.values()) {
-            EnumMap<ClayPartType, DeferredItem<Item>> materialParts = new EnumMap<>(ClayPartType.class);
-            parts.put(material, materialParts);
-            for (ClayPartType partType : ClayPartType.values()) {
-                if (!partType.isAvailableFor(material)) {
-                    continue;
-                }
-                DeferredItem<Item> item = items.registerSimpleItem(material.itemId(partType));
-                materialParts.put(partType, item);
-                registeredItems.add(item);
-                creativeTracker.accept(item);
-            }
+            parts.put(material, new EnumMap<>(ClayPartType.class));
+        }
+        for (ClayiumContentCatalog.MaterialFormSpec spec : ClayiumContentCatalog.registeredMaterialItems()) {
+            DeferredItem<Item> item = items.registerSimpleItem(spec.id());
+            parts.get(spec.material()).put(spec.partType(), item);
+            registeredItems.add(item);
+            creativeTracker.accept(item);
         }
         return new PartRegistry(parts, registeredItems);
     }

@@ -17,6 +17,7 @@ public final class ClayiumCreativeTabs {
             .displayItems((parameters, output) -> {
                 ClayiumItems.CREATIVE_BLOCKS.forEach(item -> output.accept(item.get()));
                 ClayiumItems.CREATIVE_TOOLS.forEach(item -> output.accept(item.get()));
+                ClayiumItems.CREATIVE_PROGRESSION.forEach(item -> output.accept(item.get()));
                 ClayiumItems.CREATIVE_PARTS.forEach(item -> output.accept(item.get()));
             })
             .build());

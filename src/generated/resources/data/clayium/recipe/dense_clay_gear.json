@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "i": "clayium:dense_clay_short_stick",
+    "o": "clayium:dense_clay_small_ring"
+  },
+  "pattern": [
+    "iii",
+    "ioi",
+    "iii"
+  ],
+  "result": {
+    "id": "clayium:dense_clay_gear"
+  }
+}

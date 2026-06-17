@@ -1,0 +1,8 @@
+{
+  "values": [
+    "clayium:dense_clay",
+    "clayium:compressed_clay",
+    "clayium:industrial_clay",
+    "clayium:advanced_industrial_clay"
+  ]
+}

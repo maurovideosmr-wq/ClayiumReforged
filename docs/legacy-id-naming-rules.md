@@ -29,6 +29,14 @@ Examples:
 
 Material names should be the canonical modern material id, not the old icon name. Shape names should match `ClayPartType` ids. If a shape is renamed, update datagen, tests, and this document together.
 
+Known early material ids:
+
+- `IND_CLAY` -> `industrial_clay`
+- `ADVIND_CLAY` -> `advanced_industrial_clay`
+- `ENG_CLAY` item material forms -> `energized_clay`
+
+The old compressed-clay block display name uses "Energetic Clay"; keep future compressed block ids as `energetic_clay` and compressed variants, but keep material item forms that represent `ENG_CLAY` under `energized_clay`.
+
 ## Machine Hulls
 
 Pattern: `<tier_or_material>_machine_hull`
@@ -97,6 +105,18 @@ Split old `itemMisc` metadata into explicit ids.
 - `ClayPsyche` -> `clay_psyche`
 
 Do not encode old tier numbers in ids unless the display name itself used the number.
+
+## Compressed Clay Shards
+
+Pattern: `<compressed_block_family>_shard`
+
+Known mappings:
+
+- `CompressedClayShard` meta 0 -> `compressed_clay_shard`
+- `CompressedClayShard` meta 1 -> `industrial_clay_shard`
+- `CompressedClayShard` meta 2 -> `advanced_industrial_clay_shard`
+
+Higher shard names should follow the same display-name-derived block family ids once the corresponding compressed block tier enters scope.
 
 ## Tools, Filters, Capsules, And Gadgets
 

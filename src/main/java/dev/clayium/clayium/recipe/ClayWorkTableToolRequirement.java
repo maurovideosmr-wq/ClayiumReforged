@@ -1,6 +1,7 @@
 package dev.clayium.clayium.recipe;
 
 import dev.clayium.clayium.registry.ClayiumItems;
+import dev.clayium.clayium.registry.ClayiumTags;
 import io.netty.buffer.ByteBuf;
 import java.util.List;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -35,9 +36,9 @@ public enum ClayWorkTableToolRequirement implements StringRepresentable {
     public boolean matches(ItemStack stack) {
         return switch (this) {
             case NONE -> true;
-            case ROLLING_PIN -> stack.is(ClayiumItems.CLAY_ROLLING_PIN.get());
-            case SLICER_OR_SPATULA -> stack.is(ClayiumItems.CLAY_SLICER.get()) || stack.is(ClayiumItems.CLAY_SPATULA.get());
-            case SPATULA -> stack.is(ClayiumItems.CLAY_SPATULA.get());
+            case ROLLING_PIN -> stack.is(ClayiumTags.Items.CLAY_ROLLING_PINS);
+            case SLICER_OR_SPATULA -> stack.is(ClayiumTags.Items.CLAY_SLICERS) || stack.is(ClayiumTags.Items.CLAY_SPATULAS);
+            case SPATULA -> stack.is(ClayiumTags.Items.CLAY_SPATULAS);
         };
     }
 

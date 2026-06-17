@@ -2,7 +2,7 @@
 
 Clayium Reforged is a NeoForge 26.x / Minecraft 26.x migration of the classic Clayium mod.
 
-This repository is in a Phase 1 playable alpha. The project keeps the mod id and resource namespace as `clayium`, while modern source code lives under `dev.clayium.clayium`.
+This repository is in a Phase 2 material-catalog alpha with the Phase 2 catalog slice accepted. The project keeps the mod id and resource namespace as `clayium`, while modern source code lives under `dev.clayium.clayium`.
 
 ## Current Target
 
@@ -67,6 +67,35 @@ Completed:
   - unit tests for Work Table legacy recipe signatures and registry helpers
   - GameTests for registry surface, Work Table datapack recipes, menu processing, crafting/smelting recipes, block drops, Work Table inventory drops, and wooden-tier harvest behavior
 
+## Phase 2 Status
+
+Phase 2's material-catalog slice is accepted. New cataloged content now flows from `ClayiumContentCatalog` into registration, creative tabs, datagen, tags, recipes, tests, and the legacy migration ledger.
+
+Completed in Phase 2:
+
+- Catalog-driven block, standalone item, and material-form registration.
+- New compressed clay blocks:
+  - `compressed_clay`
+  - `industrial_clay`
+  - `advanced_industrial_clay`
+- Registered-only early machine hull ids:
+  - `dense_clay_machine_hull`
+  - `simple_machine_hull`
+  - `basic_machine_hull`
+- Early material forms:
+  - clay and dense clay dust
+  - industrial and advanced industrial clay plate, large plate, and dust
+  - energized clay dust
+- Early progression items:
+  - clay/simple/basic circuits and clay circuit board
+  - CEE board, CEE circuit, and CEE
+  - compressed, industrial, and advanced industrial clay shards
+- Clay shovel, clay pickaxe, and clay wrench item ids with vanilla crafting recipes.
+- Phase 2 datagen for generated blockstates, 26.x item definitions, models, lang, loot tables, tags, and recipes.
+- GameTest/JUnit coverage for the expanded registry surface, early material recipes, no temporary hull/circuit recipes, block drops, and harvest tags.
+
+Registered-only means the ids, resources, creative tab entries, loot/tags where applicable, and tests exist, but no temporary survival bridge recipe is added until the real machine production chain is migrated. Simple/basic hull and early circuit production are intentionally left for the next machine phase instead of being bridged with temporary recipes.
+
 ## Not Yet Implemented
 
 - Full machine and energy systems.
@@ -74,7 +103,7 @@ Completed:
 - JEI coverage beyond the Clay Work Table category.
 - Jade providers and LDLib-driven production UI adapters.
 - IC2, GregTech, NEI, Multipart, MineTweaker, RF, CoFH API, or other old integrations.
-- Full material catalog, machine tiers, logistics, area tools, PAN systems, and later-game Clayium content.
+- Full material catalog, machine runtime, survival chain for simple/basic hulls and circuits, logistics, area tools, PAN systems, and later-game Clayium content.
 
 ## Development Notes
 
@@ -107,4 +136,4 @@ Manual client smoke:
 
 ## Repository Status
 
-This is a migration work-in-progress. The current branch represents the completed Phase 1 playable base, not a finished full Clayium port.
+This is a migration work-in-progress. The current branch represents the completed Phase 1 playable base plus the accepted Phase 2 material catalog slice, not a finished full Clayium port.

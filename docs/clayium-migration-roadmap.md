@@ -9,6 +9,7 @@
 - 旧版规模：CFR 输出约 356 个 Java 文件；主要复杂度集中在 `block`、`gui`、`item`、`util/crafting`、`network`、`plugin`、`pan`、`render`、`worldgen`。
 - 新版 Phase 1 基线：`src/main/java/dev/clayium/clayium` 已建立 NeoForge 26.x scaffold、DeferredRegister 注册层、Clay Work Table、材料部件注册骨架、custom recipe/datagen/GameTest/JEI 骨架。
 - Phase 1 当前能力：Dense Clay、Clay Work Table、Raw/Clay Machine Hull、raw/baked clay tools、Clay/Dense Clay parts、Work Table 数据驱动 recipe、JEI Work Table category、loot/tags、基础 crafting/smelting、JUnit 和 GameTest 回归。
+- Phase 2 已验收切片：`ClayiumContentCatalog` 已驱动早期 compressed/industrial/advanced clay、dense/simple/basic hull registered-only、早期 dust/plate/large_plate、circuit/progression item、clay shovel/pickaxe/wrench、datagen、ledger 和测试；simple/basic hull 与 circuit 的真实生产链明确交给后续机器阶段，不做临时桥接配方。
 
 本文假设 Phase 1 已作为可继续开发的基线被接受。旧代码只作为行为和内容参考，不直接复制旧包名或 CFR 输出。
 
@@ -72,12 +73,22 @@
 
 目标：完整恢复早期材料经济，使后续机器 recipes 有稳定输入输出。
 
+已验收落地切片：
+
+- 已建立 `ClayiumContentCatalog`，新增内容从 catalog row 进入 registry、creative tab、datagen、tag、recipe、ledger 和测试。
+- 已迁移 compressed/industrial/advanced clay 的注册、资源、loot/tag、压缩/反压缩 recipe。
+- 已注册 simple/basic hull 与早期 circuit/progression item，但不添加临时生存桥接 recipe。
+- 已扩展早期 dust/plate/large_plate material form，并避免全 material x shape 展开。
+- 已把 clay shovel/pickaxe/wrench 从“皮肤 item”迁到 catalog 工具角色、真实工具组件、旧版耐久/挖掘速度、tooltip 和现代 item/block tags；wrench 的机器旋转行为等机器框架后接。
+- 已验收“不做临时桥接配方”：simple/basic hull 和早期 circuit 的可生存生产链由 Phase 3/4 的机器框架与早期机器线提供。
+
 范围：
 
+- 本阶段验收范围以已落地切片为准；下列更大材料/工具扩展按 ledger 分配到 Phase 3+ / Phase 5+ 时继续迁移。
 - 扩展 `ClayMaterial` 与 `ClayPartType` 到旧 `CMaterials` 的核心形状：plate、stick、short stick、ring、gear、blade、needle、disc、cylinder、pipe、large plate、grinding head、bearing、spindle、cutting head、water wheel、dust、ingot、gem 等。
 - 迁移 compressed clay 阶梯、compressed clay shard、dense/industrial/advanced industrial clay 的基础材料链。
 - 拆分旧 `itemMisc` 的 circuit、board、laser parts、synchronous parts 等关键 progression item。
-- 补齐 clay shovel、clay pickaxe、clay wrench、clay piping tools、direction memory、synchronizer 的基础 item 和 recipes。
+- 补齐 clay piping tools、direction memory、synchronizer 的基础 item 和 recipes。
 - 将旧 OreDictionary 语义改成 tags；只为当前阶段实际使用的材料生成 tag。
 - 扩展 datagen：item model、lang、recipe、tag、loot。
 
@@ -268,7 +279,7 @@
 
 ## 下一步建议
 
-- 把 Phase 1 当前改动整理成一个 baseline commit。
-- 新建迁移账本，先从 `CBlocks`、`CItems`、`CMaterials`、`CRecipes` 自动提取条目，再人工标注阶段和状态。
-- 做 Phase 2 的最小切片：compressed clay 阶梯、industrial clay 前置材料、misc/circuit 显式 item、tags/datagen/GameTest。
-- 在 Phase 2 开始前跑一次 `runClient`，确认 Work Table 与 JEI 的视觉状态，避免 UI 债务跟随材料扩展一起滚大。
+- 提交已验收的 Phase 2 material catalog slice。
+- Phase 3 先做通用机器框架、机器 recipe runtime、能源/同步/菜单边界和样板机器。
+- Phase 4 用机器框架补 simple/basic hull、早期 circuit、真实机器加工链和第一条 survival 自动化生产线。
+- Phase 5 之后再扩大材料数量和 recipe 数量，避免在机器 schema 稳定前批量返工。

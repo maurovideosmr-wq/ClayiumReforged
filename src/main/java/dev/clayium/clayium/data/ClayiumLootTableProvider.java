@@ -1,6 +1,7 @@
 package dev.clayium.clayium.data;
 
 import dev.clayium.clayium.registry.ClayiumBlocks;
+import dev.clayium.clayium.registry.ClayiumContentCatalog;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
@@ -30,20 +31,16 @@ public final class ClayiumLootTableProvider extends LootTableProvider {
 
         @Override
         protected void generate() {
-            this.dropSelf(ClayiumBlocks.DENSE_CLAY.get());
-            this.dropSelf(ClayiumBlocks.CLAY_WORK_TABLE.get());
-            this.dropSelf(ClayiumBlocks.RAW_CLAY_MACHINE_HULL.get());
-            this.dropSelf(ClayiumBlocks.CLAY_MACHINE_HULL.get());
+            for (ClayiumContentCatalog.BlockSpec spec : ClayiumContentCatalog.blocks()) {
+                this.dropSelf(ClayiumBlocks.catalogBlock(spec.id()).get());
+            }
         }
 
         @Override
         protected Iterable<Block> getKnownBlocks() {
-            return List.of(
-                    ClayiumBlocks.DENSE_CLAY.get(),
-                    ClayiumBlocks.CLAY_WORK_TABLE.get(),
-                    ClayiumBlocks.RAW_CLAY_MACHINE_HULL.get(),
-                    ClayiumBlocks.CLAY_MACHINE_HULL.get()
-            );
+            return ClayiumContentCatalog.blocks().stream()
+                    .map(spec -> (Block) ClayiumBlocks.catalogBlock(spec.id()).get())
+                    .toList();
         }
     }
 }

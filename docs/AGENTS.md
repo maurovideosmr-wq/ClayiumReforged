@@ -11,6 +11,8 @@
 - `legacy-id-naming-rules.md` records metadata-to-registry-id naming rules for flattened 26.x content.
 - `deferred-legacy-features.md` records old systems that are dropped, deferred, or replaced by modern equivalents.
 - `phase1.5-verification.md` records Phase 1.5 verification commands and manual client checks.
+- `phase2-content-catalog.md` records the Phase 2 catalog fields, statuses, and datagen ownership rules.
+- `machine-io-panel-dummy.html` records the standalone UI dummy for the modernized legacy machine IO panel.
 - Keep implementation contracts in the nearest source/resource AGENTS.md if those folders gain local rules.
 
 # Local Contracts
@@ -23,7 +25,7 @@
 
 # Work Guidance
 
-- Keep Phase 1.5 planning records split by purpose: baseline, ledger, naming, deferred features, and verification.
+- Keep Phase 1.5+ planning records split by purpose: baseline, ledger, naming, deferred features, verification, and phase-specific content catalog notes.
 - Prefer checklist edits in `legacy-port-ledger.md` over prose-only status notes, so future agents can see what remains.
 
 # Verification

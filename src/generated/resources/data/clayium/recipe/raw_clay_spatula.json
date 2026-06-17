@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "#": "clayium:clay_short_stick",
+    "X": "clayium:clay_blade"
+  },
+  "pattern": [
+    "#X"
+  ],
+  "result": {
+    "id": "clayium:raw_clay_spatula"
+  }
+}

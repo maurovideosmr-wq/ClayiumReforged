@@ -28,6 +28,7 @@ public final class Clayium {
         ClayiumCreativeTabs.register(modEventBus);
         ClayiumGameTests.register(modEventBus);
         modEventBus.addListener(ClayiumDataGenerators::gatherServerData);
+        modEventBus.addListener(ClayiumDataGenerators::gatherClientData);
         NeoForge.EVENT_BUS.addListener(ClayiumRecipes::onDatapackSync);
     }
 }

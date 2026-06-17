@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "#": "clayium:dense_clay_plate",
+    "|": "clayium:dense_clay_stick"
+  },
+  "pattern": [
+    "###",
+    " | ",
+    " | "
+  ],
+  "result": {
+    "id": "clayium:clay_pickaxe"
+  }
+}

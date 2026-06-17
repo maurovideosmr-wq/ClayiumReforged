@@ -11,6 +11,7 @@ This is the migration checklist for old Clayium `0.4.6.36.hotfix2` content. Ever
 - Status text:
   - `Done`: implemented and verified for the current scope.
   - `Partial`: some representative content exists, but the old family is not complete.
+  - `Registered-only`: explicit ids, resources, creative tab entries, and tests exist, but survival production or runtime behavior is intentionally not implemented yet.
   - `Planned`: expected in a later phase.
   - `Deferred`: intentionally delayed or replaced by a modern equivalent.
   - `Dropped`: intentionally not migrated.
@@ -50,10 +51,12 @@ These boxes mean the old source domain has been surveyed for the initial Phase 1
 - [ ] `blockClayCraftingTable` (`Planned`, Phase 4): old advanced crafting table behavior not yet ported.
 - [x] `blockDenseClay` -> `dense_clay` (`Done`, Phase 1): registered, craftable, loot/tagged.
 - [x] `blockCompressedClay` meta 0 -> `dense_clay` (`Done`, Phase 1): old dense clay metadata entry represented by explicit block id.
-- [ ] `blockCompressedClay` metas 1-12 (`Planned`, Phase 2/5): compressed/industrial/energetic clay ladder pending.
+- [x] `blockCompressedClay` metas 1-3 -> `compressed_clay`, `industrial_clay`, `advanced_industrial_clay` (`Done`, Phase 2): registered, generated, tagged, loot tabled, and covered by compression/decompression recipes.
+- [ ] `blockCompressedClay` metas 4-12 (`Planned`, Phase 5): energetic through octuple compressed energetic clay ladder pending.
 - [x] `blockRawClayMachineHull` -> `raw_clay_machine_hull` (`Done`, Phase 1): registered, smelts into first hull, shovel tag retained.
 - [x] `blockMachineHull` meta 0 -> `clay_machine_hull` (`Done`, Phase 1): registered, self-drop, wooden pickaxe harvest accepted by tag.
-- [ ] `blockMachineHull` metas 1-12 (`Planned`, Phase 2/5): dense through OPA machine hulls pending.
+- [x] `blockMachineHull` metas 1-3 -> `dense_clay_machine_hull`, `simple_machine_hull`, `basic_machine_hull` (`Registered-only`, Phase 2): registered, generated, creative-visible, self-dropping, and intentionally has no temporary survival recipe.
+- [ ] `blockMachineHull` metas 4-12 (`Planned`, Phase 5): advanced through OPA machine hulls pending.
 - [ ] `blockOthersHull`, `blockMaterial`, `blockSiliconeColored` (`Planned`, Phase 5): metadata block families pending explicit ids.
 - [ ] Simple machine arrays: bending, wire drawing, pipe drawing, cutting, lathe, milling, condenser, grinder, decomposer, smelter (`Planned`, Phase 3/4): require shared machine runtime first.
 - [ ] Multi-input/high-tier machines: assembler, inscriber, centrifuge, chemical reactor, alloy smelter, blast furnace, reactor, CA machines (`Planned`, Phase 3/6): require recipe/runtime framework.
@@ -68,14 +71,17 @@ These boxes mean the old source domain has been surveyed for the initial Phase 1
 
 ## Items From `CItems`
 
-- [ ] `itemMisc` metadata family (`Planned`, Phase 2/5): split into explicit circuit, board, laser, antimatter, synchronous, teleportation, manipulator, core, brain, spirit, soul, anima, and psyche ids.
+- [x] `itemMisc` early circuit/progression metas -> `clay_circuit_board`, `clay_circuit`, `simple_circuit`, `basic_circuit`, `cee_board`, `cee_circuit`, `cee` (`Registered-only`, Phase 2): split explicit ids, generated resources, creative-visible, and intentionally no temporary machine-era recipes.
+- [ ] `itemMisc` remaining metadata family (`Planned`, Phase 5+): laser, antimatter, synchronous, teleportation, manipulator, advanced/precision/integrated circuit, core, brain, spirit, soul, anima, and psyche ids pending.
 - [x] `itemLargeClayBall` -> `clay_large_ball` (`Done`, Phase 1): represented by part registry.
-- [x] `itemRawClayCraftingTools` metas 0-2 -> raw rolling pin/slicer/spatula (`Done`, Phase 1): split explicit ids and smelting.
-- [x] `itemClayRollingPin`, `itemClaySlicer`, `itemClaySpatula` (`Done`, Phase 1): split explicit tool ids.
-- [ ] `itemClayWrench` (`Planned`, Phase 2/3): machine interaction behavior pending.
+- [x] `itemRawClayCraftingTools` metas 0-2 -> raw rolling pin/slicer/spatula (`Done`, Phase 1): split explicit ids, stackable like the old metadata item, and smelting.
+- [x] `itemClayRollingPin`, `itemClaySlicer`, `itemClaySpatula` (`Done`, Phase 1): split explicit tool ids, tagged as Work Table/machine clay tools, and ported old Work Table durability/remainder behavior.
+- [x] `itemClayWrench` -> `clay_wrench` (`Partial`, Phase 2): registered, generated, creative-visible, craftable, single-stack, tagged, and tooltiped; machine rotation behavior pending Phase 3.
 - [ ] `itemClayPipingTools` metadata family (`Planned`, Phase 7): IO, piping, and memory tools pending.
-- [ ] `itemCompressedClayShard` metadata family (`Planned`, Phase 2): shard ladder pending compressed clay migration.
-- [ ] Clay and Clay Steel shovels/pickaxes (`Planned`, Phase 2/5): tool materials and recipes pending.
+- [x] `itemCompressedClayShard` metas 0-2 -> `compressed_clay_shard`, `industrial_clay_shard`, `advanced_industrial_clay_shard` (`Registered-only`, Phase 2): registered, generated, and creative-visible; production chain pending machine recipes.
+- [ ] `itemCompressedClayShard` higher metas (`Planned`, Phase 5): higher compressed clay shard ladder pending.
+- [x] Clay shovel and pickaxe -> `clay_shovel`, `clay_pickaxe` (`Done`, Phase 2): registered, generated, creative-visible, craftable, tagged, and ported with old durability/tool baselines plus Clayium clay-block/clay-ore speed hooks.
+- [ ] Clay Steel shovels/pickaxes (`Planned`, Phase 5): tool materials and recipes pending.
 - [ ] `itemSynchronizer`, `itemDirectionMemory` (`Planned`, Phase 7): machine direction/sync behavior pending.
 - [ ] Filter family (`Planned`, Phase 7): duplicator, whitelist, blacklist, fuzzy, ore/tag, name/id, damage/metadata, and harvestable filters pending.
 - [ ] `itemsClayShooter`, `itemInstantTeleporter` (`Planned`, Phase 8): entity/player tools pending.
@@ -86,21 +92,23 @@ These boxes mean the old source domain has been surveyed for the initial Phase 1
 
 - [x] `CLAY` material (`Partial`, Phase 1): Phase 1 shapes migrated.
 - [x] `DENSE_CLAY` material (`Partial`, Phase 1): Phase 1 shapes migrated.
-- [ ] Core clay progression materials: `IND_CLAY`, `ADVIND_CLAY`, `ENG_CLAY`, `EXC_CLAY`, `ORG_CLAY` (`Planned`, Phase 2/5).
+- [x] Core clay progression materials: `IND_CLAY`, `ADVIND_CLAY`, `ENG_CLAY` (`Partial`, Phase 2): industrial and advanced industrial clay blocks plus dust/plate/large plate forms are registered/generated; energized clay dust is registered/generated; wider shape matrix and production machines pending.
+- [ ] Core clay progression materials: `EXC_CLAY`, `ORG_CLAY` (`Planned`, Phase 5): not registered yet.
 - [ ] Clayium-owned high-tier materials: `CLAY_STEEL`, `CLAYIUM`, `ULTIMATE_ALLOY`, `ANTIMATTER`, `PURE_ANTIMATTER`, compressed pure antimatter, `OCTUPLE_CLAY`, `OEC`, `OPA` equivalents (`Planned`, Phase 5/6).
 - [ ] Pure/impure element chain (`Planned`, Phase 5): aluminium, silicon, magnesium, sodium, lithium, zirconium, zinc, manganese, calcium, potassium, nickel, and related impure forms.
 - [ ] External-mod material aliases (`Deferred`, Phase 9): old EnderIO, Thermal, AE2, TConstruct, GregTech, IC2, Botania, ProjectRed, Galacticraft, Thaumcraft, and other compatibility material names need modern feasibility checks.
 - [x] Phase 1 shapes: plate, stick, short_stick, ring, small_ring, gear, blade, needle, disc, small_disc, cylinder, pipe, large_ball, large_plate, grinding_head, bearing, spindle, cutting_head, water_wheel (`Done`, Phase 1 for Clay/Dense Clay only).
-- [ ] Later shapes: block, ball, dust, ingot, gem, crystal and extended material-shape matrix (`Planned`, Phase 2/5).
+- [x] Early later shapes (`Partial`, Phase 2): block references, dust, plate, and large_plate rows are cataloged for the current early materials without expanding a full material x shape matrix.
+- [ ] Remaining later shapes: ingot, gem, crystal, ball variants, and extended material-shape matrix (`Planned`, Phase 5/6).
 - [x] Removed unused Dense Clay large ball artifact (`Done`, Phase 1): old leftover not part of active recipe chain.
 
 ## Recipes From `CRecipes`
 
 - [x] Clay Work Table kneading recipes (`Done`, Phase 1): 16 legacy recipes seeded into custom JSON/datapack recipe type.
 - [x] Early crafting/smelting loop (`Done`, Phase 1): dense clay, Work Table, raw/baked tools, raw hull, clay machine hull.
-- [ ] `registerToolRecipes` remainder (`Planned`, Phase 2): wrench, clay tools, piping tools, filters, shooters, capsules, gadgets pending.
-- [ ] `registerMainMaterialRecipes` remainder (`Planned`, Phase 2/5): compressed clay and material progression pending.
-- [ ] `registerHullRecipes` remainder (`Planned`, Phase 2/5): tiered hull chain pending.
+- [x] `registerToolRecipes` early clay tools (`Partial`, Phase 2): `clay_shovel`, `clay_pickaxe`, and `clay_wrench` vanilla recipes generated; piping tools, filters, shooters, capsules, and gadgets pending.
+- [x] `registerMainMaterialRecipes` early compressed clay progression (`Partial`, Phase 2): compressed clay, industrial clay, and advanced industrial clay compression/decompression recipes generated; higher material progression pending.
+- [x] `registerHullRecipes` early tier ids (`Registered-only`, Phase 2): dense/simple/basic hulls registered and generated without temporary recipes; real tiered hull recipe chain pending machine production.
 - [ ] `registerMachineRecipes` (`Planned`, Phase 3/4/6/7/8): machine blocks need shared machine registry/runtime first.
 - [ ] `registerMaterialRecipes` (`Planned`, Phase 5/6): bulk material processing pending.
 - [ ] Simple machine maps: bending, wire drawing, pipe drawing, cutting, lathe, milling, condenser, grinder, decomposer, energetic condenser, electrolysis reactor, transformer, CA condenser, CA reactor, smelter, energetic decomposer (`Planned`, Phase 3/4/6).

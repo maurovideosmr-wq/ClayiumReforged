@@ -3,6 +3,7 @@ package dev.clayium.clayium.menu;
 import dev.clayium.clayium.recipe.ClayWorkTableAction;
 import dev.clayium.clayium.recipe.ClayWorkTableRecipe;
 import dev.clayium.clayium.recipe.ClayWorkTableRecipeCache;
+import dev.clayium.clayium.item.ClayCraftingToolItem;
 import dev.clayium.clayium.registry.ClayiumBlocks;
 import dev.clayium.clayium.registry.ClayiumMenus;
 import java.util.List;
@@ -153,10 +154,6 @@ public class ClayWorkTableMenu extends AbstractContainerMenu {
         return this.getButtonState(buttonId, true);
     }
 
-    private int getServerButtonState(int buttonId) {
-        return this.getButtonState(buttonId, false);
-    }
-
     private int getButtonState(int buttonId, boolean allowSyncedContinuationFallback) {
         int cookingMethod = this.getCookingMethod();
         if (cookingMethod != 0) {
@@ -196,47 +193,55 @@ public class ClayWorkTableMenu extends AbstractContainerMenu {
     }
 
     private void pushButton(int buttonId) {
-        int buttonState = this.getServerButtonState(buttonId);
-        if (buttonState == 0) {
+        Optional<RecipeHolder<ClayWorkTableRecipe>> recipe = this.findServerRecipe(buttonId);
+        if (recipe.isEmpty()) {
             return;
         }
-        if (this.getCookingMethod() == 0 && !this.startWork(buttonId)) {
+        if (this.getCookingMethod() == 0 && !this.startWork(buttonId, recipe.get().value())) {
             return;
         }
 
+        this.consumeCraftingToolUse(buttonId);
         this.data.set(DATA_COOK_TIME, this.getCookTime() + 1);
         if (this.getCookTime() >= this.getTimeToCook()) {
-            this.completeWork(buttonId);
+            this.completeWork(recipe.get().value());
         }
         this.table.setChanged();
         this.broadcastChanges();
     }
 
-    private boolean startWork(int buttonId) {
-        Optional<ClayWorkTableRecipe> recipe = this.findProcessableRecipe(buttonId, ClayWorkTableOperations.INPUT_SLOT)
-                .map(RecipeHolder::value);
-        if (recipe.isEmpty()) {
+    private boolean startWork(int buttonId, ClayWorkTableRecipe recipe) {
+        if (!this.canFitOutputs(recipe.createOutputs())) {
             return false;
         }
         ItemStack input = this.table.getItem(ClayWorkTableOperations.INPUT_SLOT);
-        ItemStack reservedInput = input.split(recipe.get().inputCount());
+        ItemStack reservedInput = input.split(recipe.inputCount());
         if (input.isEmpty()) {
             this.table.setItem(ClayWorkTableOperations.INPUT_SLOT, ItemStack.EMPTY);
         }
         this.table.setItem(ClayWorkTableOperations.INTERNAL_INPUT_SLOT, reservedInput);
         this.data.set(DATA_COOK_TIME, 0);
-        this.data.set(DATA_TIME_TO_COOK, recipe.get().workTicks());
+        this.data.set(DATA_TIME_TO_COOK, recipe.workTicks());
         this.data.set(DATA_COOKING_METHOD, buttonId);
         return true;
     }
 
-    private void completeWork(int buttonId) {
-        this.findProcessableRecipe(buttonId, ClayWorkTableOperations.INTERNAL_INPUT_SLOT)
-                .map(RecipeHolder::value)
-                .map(ClayWorkTableRecipe::createOutputs)
-                .filter(this::canFitOutputs)
-                .ifPresent(this::addOutputs);
+    private void completeWork(ClayWorkTableRecipe recipe) {
+        List<ItemStack> outputs = recipe.createOutputs();
+        if (this.canFitOutputs(outputs)) {
+            this.addOutputs(outputs);
+        }
         this.clearWorkState();
+    }
+
+    private void consumeCraftingToolUse(int buttonId) {
+        if (buttonId < 3) {
+            return;
+        }
+        ItemStack tool = this.table.getItem(ClayWorkTableOperations.TOOL_SLOT);
+        if (tool.getItem() instanceof ClayCraftingToolItem craftingTool) {
+            this.table.setItem(ClayWorkTableOperations.TOOL_SLOT, craftingTool.getAfterWorkTableUse(tool));
+        }
     }
 
     private void clearWorkState() {
@@ -252,6 +257,17 @@ public class ClayWorkTableMenu extends AbstractContainerMenu {
             if (internalRecipe.isPresent()) {
                 return internalRecipe;
             }
+        }
+        return this.findProcessableRecipe(buttonId, ClayWorkTableOperations.INPUT_SLOT);
+    }
+
+    private Optional<RecipeHolder<ClayWorkTableRecipe>> findServerRecipe(int buttonId) {
+        int cookingMethod = this.getCookingMethod();
+        if (cookingMethod != 0) {
+            if (cookingMethod != buttonId) {
+                return Optional.empty();
+            }
+            return this.findProcessableRecipe(buttonId, ClayWorkTableOperations.INTERNAL_INPUT_SLOT);
         }
         return this.findProcessableRecipe(buttonId, ClayWorkTableOperations.INPUT_SLOT);
     }

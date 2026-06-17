@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "#": "clayium:dense_clay_blade",
+    "o": "clayium:dense_clay_spindle",
+    "|": "clayium:dense_clay_stick"
+  },
+  "pattern": [
+    "# #",
+    " o ",
+    " | "
+  ],
+  "result": {
+    "id": "clayium:clay_wrench"
+  }
+}
